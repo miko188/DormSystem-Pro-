@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Өтініш детальдары — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+  <link rel="stylesheet" href="assets/css/components/avatars.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <div class="header__actions">
+        <a href="requests.html" class="btn btn-secondary btn-sm">← Артқа</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container container-md" id="content">
+      <div class="empty-state"><div class="empty-state__icon">⏳</div><p>Жүктелуде...</p></div>
+    </div>
+  </main>
+
+  <script>
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div'); c.id = 'toast-container'; c.className = 'toast-container';
+        document.body.appendChild(c); return c;
+      })();
+      const icons = { success: '✅', danger: '❌', warning: '⚠️', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__icon">${icons[type]||'ℹ️'}</div><div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3500);
+    }
+
+    // Сессия
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) { try { currentUser = JSON.parse(sessionData); } catch(e) {} }
+
+    if (!currentUser) window.location.href = 'login.html';
+
+    const params = new URLSearchParams(window.location.search);
+    const requestId = params.get('id');
+    const allRequests = JSON.parse(localStorage.getItem('dormsystem_requests') || '[]');
+    const request = allRequests.find(r => r.id === requestId);
+
+    const content = document.getElementById('content');
+
+    if (!request) {
+      content.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">❌</div>
+          <h3 class="empty-state__title">Өтініш табылмады</h3>
+          <a href="requests.html" class="btn btn-primary">← Өтініштерге оралу</a>
+        </div>`;
+    } else {
+      // Қауіпсіздік: тек өз өтінішін көре алады
+      if (request.studentId !== currentUser.id && request.studentEmail !== currentUser.email && request.studentName !== `${currentUser.firstName} ${currentUser.lastName}`) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">🚫</div>
+            <h3 class="empty-state__title">Рұқсат жоқ</h3>
+            <p>Бұл өтініш сізге тиесілі емес</p>
+            <a href="requests.html" class="btn btn-primary">← Өтініштерге оралу</a>
+          </div>`;
+      } else {
+        const CATEGORY_MAP = {
+          repair: { label: '🔧 Жөндеу', class: 'danger' },
+          cleaning: { label: '🧹 Тазалау', class: 'info' },
+          security: { label: '🛡️ Қауіпсіздік', class: 'warning' },
+          documents: { label: '📄 Құжаттар', class: 'primary' },
+          payment: { label: '💳 Төлем', class: 'success' },
+          other: { label: '📌 Басқа', class: 'neutral' },
+        };
+        const STATUS_MAP = {
+          new: { label: '🆕 Жаңа', class: 'info' },
+          in_progress: { label: '⏳ Жұмыста', class: 'warning' },
+          waiting: { label: '⏸ Жауап күтуде', class: 'primary' },
+          resolved: { label: '✅ Шешілді', class: 'success' },
+          closed: { label: '🔒 Жабылды', class: 'neutral' },
+        };
+        const PRIORITY_MAP = {
+          low: { label: 'Төмен', class: 'neutral' },
+          medium: { label: 'Орташа', class: 'info' },
+          high: { label: 'Жоғары', class: 'warning' },
+          urgent: { label: 'Шұғыл', class: 'danger' },
+        };
+
+        const cat = CATEGORY_MAP[request.category] || CATEGORY_MAP.other;
+        const st = STATUS_MAP[request.status] || STATUS_MAP.new;
+        const pri = PRIORITY_MAP[request.priority] || PRIORITY_MAP.medium;
+        const date = new Date(request.createdAt).toLocaleString('kk-KZ');
+
+        // Timeline
+        const timeline = [];
+        timeline.push({
+          title: 'Өтініш жасалды',
+          time: new Date(request.createdAt).toLocaleString('kk-KZ'),
+          type: 'info',
+          text: `Категория: ${cat.label}`,
+        });
+        if (request.assignedToName) {
+          timeline.push({
+            title: 'Орындаушы тағайындалды',
+            time: request.updatedAt ? new Date(request.updatedAt).toLocaleString('kk-KZ') : '—',
+            type: 'primary',
+            text: request.assignedToName,
+          });
+        }
+        if (request.status === 'resolved') {
+          timeline.push({
+            title: 'Шешілді',
+            time: request.updatedAt ? new Date(request.updatedAt).toLocaleString('kk-KZ') : '—',
+            type: 'success',
+            text: '',
+          });
+        }
+
+        // Comments
+        const commentsHtml = (request.comments || []).length > 0
+          ? request.comments.map(c => `
+              <div style="padding:12px;background:${c.authorType === 'admin' ? 'var(--color-primary-light)' : 'var(--color-surface-alt)'};border-radius:8px;margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                  <strong style="font-size:0.875rem;">${c.authorName || 'Белгісіз'} ${c.authorType === 'admin' ? '👔' : '🎓'}</strong>
+                  <span class="text-xs text-muted">${new Date(c.createdAt).toLocaleString('kk-KZ')}</span>
+                </div>
+                <div style="font-size:0.875rem;">${c.text}</div>
+              </div>
+            `).join('')
+          : '<p class="text-sm text-muted">Әзірге жауап жоқ</p>';
+
+        content.innerHTML = `
+          <a href="requests.html" class="btn btn-ghost btn-sm" style="margin-bottom:16px;">← Өтініштерге оралу</a>
+
+          <div class="card" style="padding:var(--space-6);">
+            <div style="display:flex;gap:8px;margin-bottom:var(--space-4);flex-wrap:wrap;">
+              <span class="badge badge--${cat.class}">${cat.label}</span>
+              <span class="badge badge--${pri.class}">${pri.label}</span>
+              <span class="badge badge--${st.class}">${st.label}</span>
+            </div>
+
+            <h1 style="font-size:1.75rem;margin-bottom:var(--space-2);">${request.subject}</h1>
+            <p class="text-muted text-sm" style="margin-bottom:var(--space-5);">📅 ${date}</p>
+
+            <h3 style="font-size:1rem;margin-bottom:var(--space-2);">📄 Сипаттама</h3>
+            <div style="padding:var(--space-4);background:var(--color-surface-alt);border-radius:var(--radius-md);margin-bottom:var(--space-5);line-height:1.6;">
+              ${request.description}
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:var(--space-4);background:var(--color-surface-alt);border-radius:var(--radius-md);margin-bottom:var(--space-5);">
+              <div><div class="text-xs text-muted">Бөлме</div><div style="font-weight:600;">№${request.roomNumber || '—'}</div></div>
+              <div><div class="text-xs text-muted">Орындаушы</div><div style="font-weight:600;">${request.assignedToName || 'Тағайындалмаған'}</div></div>
+            </div>
+
+            <h3 style="font-size:1rem;margin-bottom:var(--space-3);">💬 Хат алмасу (${(request.comments||[]).length})</h3>
+            ${commentsHtml}
+          </div>
+        `;
+      }
+    }
+  </script>
+
+</body>
+</html>

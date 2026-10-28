@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Менің өтініштерім — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/inputs.css">
+  <link rel="stylesheet" href="assets/css/components/forms.css">
+  <link rel="stylesheet" href="assets/css/components/selects.css">
+  <link rel="stylesheet" href="assets/css/components/modals.css">
+  <link rel="stylesheet" href="assets/css/components/alerts.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+  <link rel="stylesheet" href="assets/css/components/avatars.css">
+  <link rel="stylesheet" href="assets/css/components/status-timeline.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <nav class="header__nav">
+        <a href="index.html" class="header__link">🏠 Басты бет</a>
+        <a href="rooms.html" class="header__link">🚪 Бөлмелер</a>
+        <a href="my-bookings.html" class="header__link">📝 Өтінімдер</a>
+        <a href="payments.html" class="header__link">💳 Төлемдер</a>
+        <a href="requests.html" class="header__link is-active">📬 Өтініштер</a>
+      </nav>
+      <div class="header__actions">
+        <a href="notifications.html" class="notification-btn">🔔<span class="notification-btn__dot"></span></a>
+        <a href="login.html" class="btn btn-secondary btn-sm" id="loginBtn">🔑 Кіру</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="registerBtn">✨ Тіркелу</a>
+        <a href="profile.html" class="btn btn-secondary btn-sm" id="profileBtn" style="display:none;">👤 <span id="userNameDisplay">Профиль</span></a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">🚪 Шығу</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h1 class="page-title">📬 Менің өтініштерім</h1>
+          <p class="page-subtitle">Жатақхана бойынша мәселелерді хабарлаңыз және жауаптарын бақылаңыз</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">➕ Жаңа өтініш</button>
+      </div>
+
+      <!-- Кірмеген болса -->
+      <div id="authWarning" class="alert alert--warning" style="display:none;margin-bottom:var(--space-5);">
+        <div>
+          <strong>⚠️ Назар аударыңыз!</strong> Өтініштеріңізді көру үшін кіруіңіз керек.
+          <a href="login.html" style="color:var(--color-primary);font-weight:600;text-decoration:underline;">Кіру →</a>
+        </div>
+      </div>
+
+      <!-- Статистика -->
+      <div id="statsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+        <div class="stat-card">
+          <div class="stat-card__label">Барлығы</div>
+          <div class="stat-card__value" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">🆕 Жаңа</div>
+          <div class="stat-card__value" id="statNew" style="color:var(--color-info);">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">⏳ Жұмыста</div>
+          <div class="stat-card__value" id="statInProgress" style="color:var(--color-warning);">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">✅ Шешілді</div>
+          <div class="stat-card__value" id="statResolved" style="color:var(--color-success);">0</div>
+        </div>
+      </div>
+
+      <!-- Сүзгілер -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:var(--space-5);align-items:end;">
+        <div style="flex:1;min-width:200px;">
+          <label class="form-label">Іздеу</label>
+          <input type="text" id="searchInput" class="input" placeholder="Өтініш тақырыбы...">
+        </div>
+        <div style="min-width:150px;">
+          <label class="form-label">Категория</label>
+          <select id="categoryFilter" class="select">
+            <option value="">Барлығы</option>
+            <option value="repair">🔧 Жөндеу</option>
+            <option value="cleaning">🧹 Тазалау</option>
+            <option value="security">🛡️ Қауіпсіздік</option>
+            <option value="documents">📄 Құжаттар</option>
+            <option value="payment">💳 Төлем</option>
+            <option value="other">📌 Басқа</option>
+          </select>
+        </div>
+        <div style="min-width:150px;">
+          <label class="form-label">Статус</label>
+          <select id="statusFilter" class="select">
+            <option value="">Барлығы</option>
+            <option value="new">Жаңа</option>
+            <option value="in_progress">Жұмыста</option>
+            <option value="waiting">Жауап күтуде</option>
+            <option value="resolved">Шешілді</option>
+            <option value="closed">Жабылды</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" onclick="resetFilters()">🔄 Тазалау</button>
+      </div>
+
+      <!-- Өтініштер тізімі -->
+      <div id="requestsList" style="display:flex;flex-direction:column;gap:var(--space-4);">
+        <div class="skeleton skeleton--card"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2024 DormSystem Pro — Студенттік жатақхананы басқару жүйесі</p>
+    </div>
+  </footer>
+
+  <!-- МОДАЛЬ: Жаңа өтініш -->
+  <div id="requestModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.5);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px;">
+    <div class="modal" style="background:white;border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;animation:scaleIn 0.3s ease;">
+      <div class="modal__header">
+        <h3 class="modal__title">📝 Жаңа өтініш</h3>
+        <button class="modal__close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <form id="requestForm">
+          
+          <div class="form-group">
+            <label class="form-label form-label--required">Категория</label>
+            <select id="mCategory" class="select" required>
+              <option value="">— Таңдаңыз —</option>
+              <option value="repair">🔧 Жөндеу</option>
+              <option value="cleaning">🧹 Тазалау</option>
+              <option value="security">🛡️ Қауіпсіздік</option>
+              <option value="documents">📄 Құжаттар</option>
+              <option value="payment">💳 Төлем</option>
+              <option value="other">📌 Басқа</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label form-label--required">Тақырып</label>
+            <input type="text" id="mSubject" class="input" placeholder="Мәселенің қысқаша сипаттамасы" required maxlength="100">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label form-label--required">Басымдылық</label>
+              <select id="mPriority" class="select" required>
+                <option value="low">Төмен</option>
+                <option value="medium" selected>Орташа</option>
+                <option value="high">Жоғары</option>
+                <option value="urgent">Шұғыл</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Бөлме</label>
+              <input type="text" id="mRoom" class="input" placeholder="Мысалы: №101" readonly style="background:var(--color-surface-alt);">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label form-label--required">Толық сипаттама</label>
+            <textarea id="mDescription" class="textarea" placeholder="Мәселені толығырақ сипаттаңыз. Қанша уақыттан бері, қандай жағдай..." required></textarea>
+            <span class="form-hint">Кемінде 20 таңба</span>
+          </div>
+
+          <div class="alert alert--info" style="font-size:0.8125rem;">
+            <div>ℹ️ Өтінішіңіз әкімшіге жіберіледі. Жауап әдетте 1-2 жұмыс күні ішінде келеді.</div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Болдырмау</button>
+        <button class="btn btn-primary" onclick="submitRequest()">📤 Жіберу</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // 1. TOAST
+    // ============================================================
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div');
+        c.id = 'toast-container';
+        c.className = 'toast-container';
+        document.body.appendChild(c);
+        return c;
+      })();
+      const icons = { success: '✅', danger: '❌', warning: '⚠️', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__icon">${icons[type]||'ℹ️'}</div><div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3500);
+    }
+
+    // ============================================================
+    // 2. СЕССИЯ
+    // ============================================================
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) {
+      try { currentUser = JSON.parse(sessionData); } catch(e) {}
+    }
+
+    if (currentUser && currentUser.id) {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('registerBtn').style.display = 'none';
+      document.getElementById('profileBtn').style.display = 'inline-flex';
+      document.getElementById('logoutBtn').style.display = 'inline-flex';
+      document.getElementById('userNameDisplay').textContent = currentUser.firstName;
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Шығуды растайсыз ба?')) {
+          sessionStorage.removeItem('dormsystem_session_current_user');
+          window.location.reload();
+        }
+      });
+    } else {
+      document.getElementById('authWarning').style.display = 'flex';
+      document.getElementById('statsContainer').style.display = 'none';
+    }
+
+    // ============================================================
+    // 3. КОНСТАНТАЛАР
+    // ============================================================
+    const CATEGORY_MAP = {
+      repair: { label: '🔧 Жөндеу', class: 'danger' },
+      cleaning: { label: '🧹 Тазалау', class: 'info' },
+      security: { label: '🛡️ Қауіпсіздік', class: 'warning' },
+      documents: { label: '📄 Құжаттар', class: 'primary' },
+      payment: { label: '💳 Төлем', class: 'success' },
+      other: { label: '📌 Басқа', class: 'neutral' },
+    };
+
+    const STATUS_MAP = {
+      new: { label: '🆕 Жаңа', class: 'info' },
+      in_progress: { label: '⏳ Жұмыста', class: 'warning' },
+      waiting: { label: '⏸ Жауап күтуде', class: 'primary' },
+      resolved: { label: '✅ Шешілді', class: 'success' },
+      closed: { label: '🔒 Жабылды', class: 'neutral' },
+    };
+
+    const PRIORITY_MAP = {
+      low: { label: 'Төмен', class: 'neutral' },
+      medium: { label: 'Орташа', class: 'info' },
+      high: { label: 'Жоғары', class: 'warning' },
+      urgent: { label: 'Шұғыл', class: 'danger' },
+    };
+
+    // ============================================================
+    // 4. ДЕРЕКТЕРДІ ЖҮКТЕУ (СИНХРОНДЫ)
+    // ============================================================
+    let allRequests = JSON.parse(localStorage.getItem('dormsystem_requests') || '[]');
+
+    // Демо деректер (бірінші рет + seeded флагы)
+    if (allRequests.length === 0 && !localStorage.getItem('dormsystem_seeded')) {
+      allRequests = [
+        {
+          id: 'req_demo_1',
+          studentId: currentUser?.id || 'u1',
+          studentName: currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'Айдос Серікұлы',
+          studentEmail: currentUser?.email || 'student@demo.kz',
+          category: 'repair',
+          priority: 'high',
+          subject: 'Шам жанбыршақ',
+          description: 'Бөлмедегі шам жанып тұрмайды, ауыстыру қажет',
+          roomNumber: '101',
+          status: 'in_progress',
+          assignedTo: 'staff_1',
+          assignedToName: 'Мария Петрова',
+          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          comments: [
+            {
+              author: 'staff_1',
+              authorName: 'Мария Петрова',
+              text: 'Электрик шақыртылды, ертең келеді',
+              createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            },
+          ],
+        },
+      ];
+      localStorage.setItem('dormsystem_requests', JSON.stringify(allRequests));
+      localStorage.setItem('dormsystem_seeded', 'true');
+    }
+
+    // Студенттің өз өтініштерін табу (3 жолмен)
+    let myRequests = [];
+    if (currentUser) {
+      myRequests = allRequests.filter(r =>
+        r.studentId === currentUser.id ||
+        r.studentEmail === currentUser.email ||
+        r.studentName === `${currentUser.firstName} ${currentUser.lastName}`
+      );
+    }
+
+    // ============================================================
+    // 5. СТАТИСТИКАНЫ ЖАҢАРТУ
+    // ============================================================
+    function updateStats() {
+      document.getElementById('statTotal').textContent = myRequests.length;
+      document.getElementById('statNew').textContent = myRequests.filter(r => r.status === 'new').length;
+      document.getElementById('statInProgress').textContent = myRequests.filter(r => r.status === 'in_progress').length;
+      document.getElementById('statResolved').textContent = myRequests.filter(r => r.status === 'resolved' || r.status === 'closed').length;
+    }
+    updateStats();
+
+    // ============================================================
+    // 6. КЕСТЕНІ РЕНДЕРЛЕУ
+    // ============================================================
+    const requestsList = document.getElementById('requestsList');
+    let filteredRequests = [...myRequests];
+
+    function renderRequests() {
+      if (!currentUser) {
+        requestsList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">🔒</div>
+            <h3 class="empty-state__title">Кіру қажет</h3>
+            <p class="empty-state__text">Өтініштеріңізді көру үшін кіруіңіз керек</p>
+            <a href="login.html" class="btn btn-primary">🔑 Кіру</a>
+          </div>
+        `;
+        return;
+      }
+
+      if (filteredRequests.length === 0) {
+        requestsList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">📭</div>
+            <h3 class="empty-state__title">Өтініштер жоқ</h3>
+            <p class="empty-state__text">Сіз әзірге өтініш жасамағансыз</p>
+            <button class="btn btn-primary" onclick="openAddModal()">📝 Жаңа өтініш</button>
+          </div>
+        `;
+        return;
+      }
+
+      // Жаңалары жоғарыда
+      const sorted = [...filteredRequests].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      requestsList.innerHTML = sorted.map(r => {
+        const cat = CATEGORY_MAP[r.category] || CATEGORY_MAP.other;
+        const st = STATUS_MAP[r.status] || STATUS_MAP.new;
+        const pri = PRIORITY_MAP[r.priority] || PRIORITY_MAP.medium;
+        const date = new Date(r.createdAt).toLocaleDateString('kk-KZ', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        });
+        const commentsCount = (r.comments || []).length;
+
+        return `
+          <div class="card card-hover" style="padding:var(--space-5);cursor:pointer;" onclick="location.href='request-details.html?id=${r.id}'">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:var(--space-4);">
+              <div style="display:flex;gap:12px;align-items:start;flex:1;min-width:200px;">
+                <div style="width:48px;height:48px;border-radius:12px;background:var(--color-primary-light);color:var(--color-primary);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">
+                  ${cat.label.split(' ')[0]}
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <h3 style="font-size:1.125rem;margin-bottom:4px;">${r.subject || 'Тақырыпсыз'}</h3>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <span class="badge badge--${cat.class}">${cat.label}</span>
+                    <span class="badge badge--${pri.class}">${pri.label}</span>
+                    ${r.roomNumber ? `<span class="badge badge--neutral">🚪 №${r.roomNumber}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+              <span class="badge badge--${st.class}" style="font-size:0.875rem;padding:6px 12px;">${st.label}</span>
+            </div>
+
+            <p class="text-sm text-secondary" style="margin-bottom:var(--space-4);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+              ${r.description || ''}
+            </p>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:var(--space-3);border-top:1px solid var(--color-border);">
+              <div style="display:flex;gap:16px;font-size:0.8125rem;color:var(--color-text-muted);">
+                <span>📅 ${date}</span>
+                ${commentsCount > 0 ? `<span>💬 ${commentsCount} жауап</span>` : ''}
+                ${r.assignedToName ? `<span>👤 ${r.assignedToName}</span>` : ''}
+              </div>
+              <span style="font-size:0.8125rem;color:var(--color-primary);font-weight:600;">Толығырақ →</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ============================================================
+    // 7. СҮЗГІЛЕУ
+    // ============================================================
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const category = document.getElementById('categoryFilter').value;
+      const status = document.getElementById('statusFilter').value;
+
+      filteredRequests = myRequests.filter(r => {
+        if (search) {
+          const haystack = `${r.subject} ${r.description}`.toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        if (category && r.category !== category) return false;
+        if (status && r.status !== status) return false;
+        return true;
+      });
+
+      renderRequests();
+    }
+
+    window.resetFilters = function() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('statusFilter').value = '';
+      applyFilters();
+    };
+
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+    // ============================================================
+    // 8. МОДАЛЬ (Жаңа өтініш)
+    // ============================================================
+    const modal = document.getElementById('requestModal');
+
+    window.openAddModal = function() {
+      if (!currentUser) {
+        showToast('Өтініш жасау үшін кіруіңіз керек', 'warning');
+        setTimeout(() => window.location.href = 'login.html', 1500);
+        return;
+      }
+      
+      // Бөлмені автотолтыру
+      const students = JSON.parse(localStorage.getItem('dormsystem_students') || '[]');
+      const rooms = JSON.parse(localStorage.getItem('dormsystem_rooms') || '[]');
+      const studentData = students.find(s => s.userId === currentUser.id || s.email === currentUser.email);
+      const room = studentData ? rooms.find(r => r.id === studentData.roomId) : null;
+      
+      document.getElementById('mRoom').value = room ? `№${room.number}` : '—';
+      
+      document.getElementById('requestForm').reset();
+      modal.style.display = 'flex';
+    };
+
+    window.closeModal = function() {
+      modal.style.display = 'none';
+    };
+
+    // ============================================================
+    // 9. ЖІБЕРУ
+    // ============================================================
+    window.submitRequest = function() {
+      const category = document.getElementById('mCategory').value;
+      const subject = document.getElementById('mSubject').value.trim();
+      const priority = document.getElementById('mPriority').value;
+      const description = document.getElementById('mDescription').value.trim();
+      const roomNumber = document.getElementById('mRoom').value.replace('№', '');
+
+      // Валидация
+      if (!category) return showToast('Категорияны таңдаңыз', 'danger');
+      if (!subject) return showToast('Тақырыпты енгізіңіз', 'danger');
+      if (subject.length < 5) return showToast('Тақырып кемінде 5 таңба болуы керек', 'danger');
+      if (!description) return showToast('Сипаттаманы енгізіңіз', 'danger');
+      if (description.length < 20) return showToast('Сипаттама кемінде 20 таңба болуы керек', 'danger');
+
+      // Жаңа өтініш
+      const newRequest = {
+        id: 'req_' + Date.now(),
+        studentId: currentUser.id,
+        studentName: `${currentUser.firstName} ${currentUser.lastName}`,
+        studentEmail: currentUser.email,
+        category: category,
+        priority: priority,
+        subject: subject,
+        description: description,
+        roomNumber: roomNumber || '—',
+        status: 'new',
+        assignedTo: null,
+        assignedToName: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        comments: [],
+      };
+
+      // localStorage-ке сақтау
+      const requests = JSON.parse(localStorage.getItem('dormsystem_requests') || '[]');
+      requests.push(newRequest);
+      localStorage.setItem('dormsystem_requests', JSON.stringify(requests));
+
+      showToast('Өтінішіңіз сәтті жіберілді! 🎉', 'success');
+      closeModal();
+
+      // Бетті жаңарту (синхронды)
+      setTimeout(() => window.location.reload(), 800);
+    };
+
+    // ============================================================
+    // 10. БАСТАПҚЫ РЕНДЕР
+    // ============================================================
+    renderRequests();
+    console.log('✅ Өтініштер беті жүктелді');
+  </script>
+
+</body>
+</html>

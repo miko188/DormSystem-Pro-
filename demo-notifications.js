@@ -1,0 +1,32 @@
+export const demoNotifications = [
+  {
+    id: 'notif_1',
+    userId: 'user_student_1',
+    type: 'success',
+    title: 'Өтінім мақұлданды',
+    text: '№101 бөлмеге өтініміңіз мақұлданды',
+    read: false,
+    createdAt: '2024-10-15T10:00:00Z',
+    link: 'my-bookings.html',
+  },
+  {
+    id: 'notif_2',
+    userId: 'user_student_1',
+    type: 'warning',
+    title: 'Төлем мерзімі жақындады',
+    text: 'Қараша айы үшін төлем 10 қарашаға дейін төленуі керек',
+    read: false,
+    createdAt: '2024-10-25T10:00:00Z',
+    link: 'payments.html',
+  },
+  {
+    id: 'notif_3',
+    userId: 'user_student_1',
+    type: 'info',
+    title: 'Өтінішіңізге жауап келді',
+    text: 'Шам жанбыршақ туралы өтінішіңізге жауап берілді',
+    read: true,
+    createdAt: '2024-10-15T14:00:00Z',
+    link: 'request-details.html?id=req_1',
+  },
+];

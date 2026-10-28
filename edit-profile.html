@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профильді өңдеу — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/inputs.css">
+  <link rel="stylesheet" href="assets/css/components/forms.css">
+  <link rel="stylesheet" href="assets/css/components/alerts.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <div class="header__actions">
+        <a href="profile.html" class="btn btn-secondary btn-sm">← Артқа</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container container-sm">
+      
+      <div class="page-header">
+        <h1 class="page-title">✏️ Профильді өңдеу</h1>
+        <p class="page-subtitle">Тек рұқсат етілген өрістерді өзгерте аласыз</p>
+      </div>
+
+      <div id="authWarning" class="alert alert--warning" style="display:none;margin-bottom:var(--space-5);">
+        <div>
+          <strong>⚠️ Назар аударыңыз!</strong> Профильді өңдеу үшін кіруіңіз керек.
+          <a href="login.html" style="color:var(--color-primary);font-weight:600;text-decoration:underline;">Кіру →</a>
+        </div>
+      </div>
+
+      <form id="editForm" class="card" style="padding:var(--space-8);display:none;">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label form-label--required">Аты</label>
+            <input type="text" id="firstName" class="input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label form-label--required">Тегі</label>
+            <input type="text" id="lastName" class="input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="email" class="input" disabled style="background:var(--color-surface-alt);">
+          <span class="form-hint">Email-ды әкімші ғана өзгерте алады</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Телефон</label>
+            <input type="tel" id="phone" class="input" placeholder="+7 701 234 56 78">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ЖСН</label>
+            <input type="text" id="iin" class="input" maxlength="12" disabled style="background:var(--color-surface-alt);">
+            <span class="form-hint">ЖСН-ды әкімші ғана өзгерте алады</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Факультет</label>
+            <input type="text" id="faculty" class="input" disabled style="background:var(--color-surface-alt);">
+            <span class="form-hint">Факультетті әкімші өзгертеді</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Топ</label>
+            <input type="text" id="group" class="input" disabled style="background:var(--color-surface-alt);">
+            <span class="form-hint">Топты әкімші өзгертеді</span>
+          </div>
+        </div>
+
+        <div class="alert alert--info" style="margin:var(--space-5) 0;">
+          <div>ℹ️ Тек аты, тегі және телефон нөміріңізді өзгерте аласыз. Басқа өрістерді өзгерту үшін әкімшіге хабарласыңыз.</div>
+        </div>
+
+        <div style="display:flex;gap:var(--space-2);justify-content:flex-end;flex-wrap:wrap;">
+          <a href="profile.html" class="btn btn-secondary">← Болдырмау</a>
+          <button type="submit" class="btn btn-primary" id="submitBtn">💾 Сақтау</button>
+        </div>
+
+      </form>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2024 DormSystem Pro — Студенттік жатақхананы басқару жүйесі</p>
+    </div>
+  </footer>
+
+  <script>
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div'); c.id = 'toast-container'; c.className = 'toast-container';
+        document.body.appendChild(c); return c;
+      })();
+      const icons = { success: '✅', danger: '❌', warning: '⚠️', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__icon">${icons[type]||'ℹ️'}</div><div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3500);
+    }
+
+    // 1. Сессия
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) {
+      try { currentUser = JSON.parse(sessionData); } catch(e) {}
+    }
+
+    if (!currentUser || !currentUser.id) {
+      document.getElementById('authWarning').style.display = 'flex';
+      document.getElementById('editForm').style.display = 'none';
+    } else {
+      document.getElementById('editForm').style.display = 'block';
+    }
+
+    // 2. Студентті табу
+    const allStudents = JSON.parse(localStorage.getItem('dormsystem_students') || '[]');
+    let studentData = currentUser ? allStudents.find(s => 
+      s.userId === currentUser.id || 
+      s.email === currentUser.email
+    ) : null;
+
+    // 3. Форманы толтыру
+    if (studentData) {
+      document.getElementById('firstName').value = studentData.firstName || '';
+      document.getElementById('lastName').value = studentData.lastName || '';
+      document.getElementById('email').value = studentData.email || '';
+      document.getElementById('phone').value = studentData.phone || '';
+      document.getElementById('iin').value = studentData.iin || '';
+      document.getElementById('faculty').value = studentData.faculty || '';
+      document.getElementById('group').value = studentData.group || '';
+    } else if (currentUser) {
+      document.getElementById('firstName').value = currentUser.firstName || '';
+      document.getElementById('lastName').value = currentUser.lastName || '';
+      document.getElementById('email').value = currentUser.email || '';
+      document.getElementById('phone').value = currentUser.phone || '';
+    }
+
+    // 4. Сақтау (СИНХРОНДЫ — admin/students.html-де де жаңарады!)
+    document.getElementById('editForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newFirstName = document.getElementById('firstName').value.trim();
+      const newLastName = document.getElementById('lastName').value.trim();
+      const newPhone = document.getElementById('phone').value.trim();
+
+      if (!newFirstName) return showToast('Аты міндетті', 'danger');
+      if (!newLastName) return showToast('Тегі міндетті', 'danger');
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.classList.add('is-loading');
+      submitBtn.disabled = true;
+
+      // === 1. Students коллекциясын жаңарту ===
+      let students = JSON.parse(localStorage.getItem('dormsystem_students') || '[]');
+      const studentIdx = students.findIndex(s => 
+        s.userId === currentUser.id || 
+        s.email === currentUser.email
+      );
+
+      if (studentIdx !== -1) {
+        students[studentIdx].firstName = newFirstName;
+        students[studentIdx].lastName = newLastName;
+        students[studentIdx].phone = newPhone;
+        localStorage.setItem('dormsystem_students', JSON.stringify(students));
+      } else {
+        // Жаңа жазба жасау
+        const newStudent = {
+          id: 'stud_' + Date.now(),
+          userId: currentUser.id,
+          firstName: newFirstName,
+          lastName: newLastName,
+          email: currentUser.email,
+          phone: newPhone,
+          faculty: '',
+          group: '',
+          course: 1,
+          iin: '',
+          roomId: null,
+        };
+        students.push(newStudent);
+        localStorage.setItem('dormsystem_students', JSON.stringify(students));
+      }
+
+      // === 2. Users коллекциясын жаңарту (кіру үшін) ===
+      let users = JSON.parse(localStorage.getItem('dormsystem_users') || '[]');
+      const userIdx = users.findIndex(u => u.id === currentUser.id || u.email === currentUser.email);
+      if (userIdx !== -1) {
+        users[userIdx].firstName = newFirstName;
+        users[userIdx].lastName = newLastName;
+        users[userIdx].phone = newPhone;
+        localStorage.setItem('dormsystem_users', JSON.stringify(users));
+      }
+
+      // === 3. Сессияны жаңарту ===
+      currentUser.firstName = newFirstName;
+      currentUser.lastName = newLastName;
+      currentUser.phone = newPhone;
+      sessionStorage.setItem('dormsystem_session_current_user', JSON.stringify(currentUser));
+
+      showToast('Профиль сәтті жаңартылды! ✅', 'success');
+
+      setTimeout(() => {
+        window.location.href = 'profile.html';
+      }, 800);
+    });
+
+    console.log('✅ Өңдеу беті жүктелді');
+  </script>
+
+</body>
+</html>

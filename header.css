@@ -1,0 +1,163 @@
+/* ============================================
+   HEADER — Жоғарғы панель
+   ============================================ */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  animation: fadeIn var(--transition-base);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  height: 68px;
+}
+
+.header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--color-text);
+  transition: transform var(--transition-fast);
+}
+
+.header__brand:hover {
+  transform: scale(1.02);
+}
+
+.header__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 800;
+  box-shadow: var(--shadow-glow);
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.header__link {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.header__link:hover {
+  color: var(--color-text);
+  background: var(--color-surface-alt);
+}
+
+.header__link.is-active {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Уведомление иконкасы */
+.notification-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.notification-btn:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.notification-btn__dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  border: 2px solid var(--color-surface);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Мобиль мәзір батырмасы */
+.mobile-menu-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+}
+
+@media (max-width: 968px) {
+  .header__nav { display: none; }
+  .mobile-menu-btn { display: flex; }
+}
+
+/* Мобиль мәзір */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 68px 0 0 0;
+  background: var(--color-surface);
+  z-index: var(--z-sticky);
+  padding: var(--space-6);
+  animation: slideInRight var(--transition-base);
+  overflow-y: auto;
+}
+
+.mobile-menu.is-open {
+  display: block;
+}
+
+.mobile-menu__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text);
+  transition: all var(--transition-fast);
+  margin-bottom: var(--space-1);
+}
+
+.mobile-menu__link:hover,
+.mobile-menu__link.is-active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}

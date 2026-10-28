@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Менің өтінімдерім — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/alerts.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <nav class="header__nav">
+        <a href="index.html" class="header__link">🏠 Басты бет</a>
+        <a href="rooms.html" class="header__link">🚪 Бөлмелер</a>
+        <a href="my-bookings.html" class="header__link is-active">📝 Өтінімдер</a>
+        <a href="payments.html" class="header__link">💳 Төлемдер</a>
+        <a href="requests.html" class="header__link">📬 Өтініштер</a>
+      </nav>
+      <div class="header__actions">
+        <a href="notifications.html" class="notification-btn">🔔<span class="notification-btn__dot"></span></a>
+        <a href="login.html" class="btn btn-secondary btn-sm" id="loginBtn">🔑 Кіру</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="registerBtn">✨ Тіркелу</a>
+        <a href="profile.html" class="btn btn-secondary btn-sm" id="profileBtn" style="display:none;">👤 <span id="userNameDisplay">Профиль</span></a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">🚪 Шығу</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h1 class="page-title">📝 Менің өтінімдерім</h1>
+          <p class="page-subtitle">Барлық өтінімдеріңіздің тарихы мен мәртебесі</p>
+        </div>
+        <a href="rooms.html" class="btn btn-primary">➕ Жаңа өтінім</a>
+      </div>
+
+      <div id="authWarning" class="alert alert--warning" style="display:none;margin-bottom:var(--space-5);">
+        <div><strong>⚠️ Назар аударыңыз!</strong> Өтінімдеріңізді көру үшін жүйеге кіруіңіз керек. <a href="login.html" style="color:var(--color-primary);font-weight:600;text-decoration:underline;">Кіру →</a></div>
+      </div>
+
+      <div id="appsList" style="display:flex;flex-direction:column;gap:var(--space-4);"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2024 DormSystem Pro</p>
+    </div>
+  </footer>
+
+  <script>
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div'); c.id = 'toast-container'; c.className = 'toast-container';
+        document.body.appendChild(c); return c;
+      })();
+      const icons = { success: '✅', danger: '❌', warning: '⚠️', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__icon">${icons[type]||'ℹ️'}</div><div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3500);
+    }
+
+    // 1. Сессия
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) { try { currentUser = JSON.parse(sessionData); } catch(e) {} }
+
+    if (currentUser && currentUser.id) {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('registerBtn').style.display = 'none';
+      document.getElementById('profileBtn').style.display = 'inline-flex';
+      document.getElementById('logoutBtn').style.display = 'inline-flex';
+      document.getElementById('userNameDisplay').textContent = currentUser.firstName;
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Шығуды растайсыз ба?')) {
+          sessionStorage.removeItem('dormsystem_session_current_user');
+          window.location.reload();
+        }
+      });
+    } else {
+      document.getElementById('authWarning').style.display = 'flex';
+    }
+
+    // 2. Статус конфигурациясы
+    const STATUS_MAP = {
+      submitted: { label: 'Жіберілді', badge: 'info', icon: '📤' },
+      reviewing: { label: 'Қаралуда', badge: 'warning', icon: '⏳' },
+      approved: { label: 'Мақұлданды', badge: 'success', icon: '✅' },
+      rejected: { label: 'Қабылданбады', badge: 'danger', icon: '❌' },
+      cancelled: { label: 'Бас тартылды', badge: 'neutral', icon: '🚫' },
+    };
+
+    // 3. Өтінімдерді жүктеу
+    const appsList = document.getElementById('appsList');
+    const allApps = JSON.parse(localStorage.getItem('dormsystem_applications') || '[]');
+    
+    // Студенттің өз өтінімдерін табу (СИНХРОНДЫ — 3 жолмен)
+    let myApps = [];
+    if (currentUser) {
+      myApps = allApps.filter(a => 
+        a.studentId === currentUser.id || 
+        a.studentEmail === currentUser.email ||
+        a.studentName === `${currentUser.firstName} ${currentUser.lastName}`
+      );
+    }
+
+    if (!currentUser) {
+      appsList.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">🔒</div>
+          <h3 class="empty-state__title">Кіру қажет</h3>
+          <p class="empty-state__text">Өтінімдеріңізді көру үшін жүйеге кіріңіз</p>
+          <a href="login.html" class="btn btn-primary">🔑 Кіру</a>
+        </div>
+      `;
+    } else if (myApps.length === 0) {
+      appsList.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">📭</div>
+          <h3 class="empty-state__title">Өтінімдер жоқ</h3>
+          <p class="empty-state__text">Сіз әзірге өтінім бермегенсіз</p>
+          <a href="rooms.html" class="btn btn-primary">📝 Бөлмелерді қарау</a>
+        </div>
+      `;
+    } else {
+      myApps.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      appsList.innerHTML = myApps.map(app => {
+        const conf = STATUS_MAP[app.status] || STATUS_MAP.submitted;
+        const date = new Date(app.createdAt).toLocaleDateString('kk-KZ', { year: 'numeric', month: 'long', day: 'numeric' });
+        const isApproved = app.status === 'approved';
+        const isRejected = app.status === 'rejected';
+        
+        let borderColor = 'var(--color-border)';
+        if (isApproved) borderColor = 'var(--color-success)';
+        if (isRejected) borderColor = 'var(--color-danger)';
+
+        return `
+          <div class="card" style="padding:var(--space-5);border-color:${borderColor};${isApproved ? 'box-shadow:0 0 0 2px rgba(22,163,74,0.1);' : ''}">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:var(--space-4);">
+              <div style="display:flex;gap:12px;align-items:start;">
+                <div style="width:48px;height:48px;border-radius:12px;background:${isApproved ? 'var(--color-success-light)' : (isRejected ? 'var(--color-danger-light)' : 'var(--color-primary-light)')};color:${isApproved ? 'var(--color-success)' : (isRejected ? 'var(--color-danger)' : 'var(--color-primary)')};display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">
+                  ${isApproved ? '🎉' : (isRejected ? '❌' : '🚪')}
+                </div>
+                <div>
+                  <h3 style="font-size:1.125rem;margin-bottom:4px;">№${app.roomNumber} бөлме</h3>
+                  <p class="text-sm text-secondary">${app.buildingName}</p>
+                </div>
+              </div>
+              <span class="badge badge--${conf.badge}" style="font-size:0.875rem;padding:6px 12px;">${conf.icon} ${conf.label}</span>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;padding:var(--space-4);background:var(--color-surface-alt);border-radius:var(--radius-md);margin-bottom:var(--space-4);">
+              <div><div class="text-xs text-muted">Жіберілген күні</div><div style="font-weight:600;font-size:0.875rem;">${date}</div></div>
+              <div><div class="text-xs text-muted">Бағасы</div><div style="font-weight:600;font-size:0.875rem;">${(app.roomPrice||0).toLocaleString()} ₸/ай</div></div>
+            </div>
+
+            ${app.adminComment ? `
+              <div class="alert alert--${isApproved ? 'success' : (isRejected ? 'danger' : 'info')}" style="margin-bottom:var(--space-4);">
+                <div><strong>Әкімші жауабы:</strong> ${app.adminComment}</div>
+              </div>
+            ` : ''}
+
+            ${isApproved ? `
+              <div class="alert alert--success" style="margin-bottom:var(--space-4);">
+                <div>🎉 <strong>Құттықтаймыз!</strong> Сіздің өтініміңіз мақұлданды. Бөлмеге қоныстану үшін әкімшілікке хабарласыңыз.</div>
+              </div>
+            ` : ''}
+
+            ${isRejected ? `
+              <div class="alert alert--danger" style="margin-bottom:var(--space-4);">
+                <div>❌ <strong>Өтінім қабылданбады.</strong> Басқа бөлмелерді қарап көріңіз.</div>
+              </div>
+            ` : ''}
+
+            <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;">
+              ${(app.status === 'submitted' || app.status === 'reviewing') ? `
+                <button class="btn btn-danger btn-sm" onclick="cancelApp('${app.id}')">❌ Бас тарту</button>
+              ` : ''}
+              ${isApproved ? `
+                <a href="payments.html" class="btn btn-primary btn-sm">💳 Төлем жасау</a>
+                <a href="profile.html" class="btn btn-secondary btn-sm">👤 Профильді көру</a>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 4. Бас тарту
+    window.cancelApp = function(appId) {
+      if (!confirm('Өтінімнен бас тартқыңыз келе ме?')) return;
+      const apps = JSON.parse(localStorage.getItem('dormsystem_applications') || '[]');
+      const idx = apps.findIndex(a => a.id === appId);
+      if (idx !== -1) {
+        apps[idx].status = 'cancelled';
+        apps[idx].updatedAt = new Date().toISOString();
+        localStorage.setItem('dormsystem_applications', JSON.stringify(apps));
+        showToast('Өтінім бас тартылды', 'success');
+        setTimeout(() => window.location.reload(), 800);
+      }
+    };
+
+    // 5. Бетке қайта оралғанда жаңару
+    window.addEventListener('focus', () => {
+      const newApps = JSON.parse(localStorage.getItem('dormsystem_applications') || '[]');
+      if (newApps.length !== allApps.length) window.location.reload();
+    });
+  </script>
+</body>
+</html>

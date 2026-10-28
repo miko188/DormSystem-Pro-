@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Төлемдер — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/alerts.css">
+  <link rel="stylesheet" href="assets/css/components/tables.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+  <link rel="stylesheet" href="assets/css/components/avatars.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <nav class="header__nav">
+        <a href="index.html" class="header__link">🏠 Басты бет</a>
+        <a href="rooms.html" class="header__link">🚪 Бөлмелер</a>
+        <a href="my-bookings.html" class="header__link">📝 Өтінімдер</a>
+        <a href="payments.html" class="header__link is-active">💳 Төлемдер</a>
+        <a href="requests.html" class="header__link">📬 Өтініштер</a>
+      </nav>
+      <div class="header__actions">
+        <a href="notifications.html" class="notification-btn">🔔<span class="notification-btn__dot"></span></a>
+        <a href="login.html" class="btn btn-secondary btn-sm" id="loginBtn">🔑 Кіру</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="registerBtn">✨ Тіркелу</a>
+        <a href="profile.html" class="btn btn-secondary btn-sm" id="profileBtn" style="display:none;">👤 <span id="userNameDisplay">Профиль</span></a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">🚪 Шығу</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      
+      <div class="page-header">
+        <h1 class="page-title">💳 Менің төлемдерім</h1>
+        <p class="page-subtitle">Барлық төлемдеріңіз, қарыздарыңыз және төлем тарихыңыз</p>
+      </div>
+
+      <!-- Кірмеген болса -->
+      <div id="authWarning" class="alert alert--warning" style="display:none;margin-bottom:var(--space-5);">
+        <div>
+          <strong>⚠️ Назар аударыңыз!</strong> Төлемдеріңізді көру үшін жүйеге кіруіңіз керек.
+          <a href="login.html" style="color:var(--color-primary);font-weight:600;text-decoration:underline;">Кіру →</a>
+        </div>
+      </div>
+
+      <!-- Статистика (4 карточка) -->
+      <div id="statsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+        <div class="stat-card">
+          <div class="stat-card__label">Жалпы төленген</div>
+          <div class="stat-card__value" id="statPaid" style="color:var(--color-success);">0 ₸</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Күтуде</div>
+          <div class="stat-card__value" id="statPending" style="color:var(--color-warning);">0 ₸</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Мерзімі өтті</div>
+          <div class="stat-card__value" id="statOverdue" style="color:var(--color-danger);">0 ₸</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Барлығы</div>
+          <div class="stat-card__value" id="statTotal">0</div>
+        </div>
+      </div>
+
+      <!-- Төлемдер тізімі -->
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-toolbar__title">📋 Төлем тарихы</div>
+        </div>
+        <div class="table-scroll">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Сипаттама</th>
+                <th>Сома</th>
+                <th>Мерзімі</th>
+                <th>Төленген күні</th>
+                <th>Квитанция</th>
+                <th>Статус</th>
+                <th>Әрекет</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsBody">
+              <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--color-text-muted);">Жүктелуде...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2024 DormSystem Pro — Студенттік жатақхананы басқару жүйесі</p>
+      <div class="footer__links">
+        <a href="info/privacy.html">Құпиялылық</a>
+        <a href="info/terms.html">Шарттар</a>
+        <a href="info/contacts.html">Байланыс</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div'); c.id = 'toast-container'; c.className = 'toast-container';
+        document.body.appendChild(c); return c;
+      })();
+      const icons = { success: '✅', danger: '❌', warning: '⚠️', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__icon">${icons[type]||'ℹ️'}</div><div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3500);
+    }
+
+    // 1. Сессия
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) {
+      try { currentUser = JSON.parse(sessionData); } catch (e) {}
+    }
+
+    if (currentUser && currentUser.id) {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('registerBtn').style.display = 'none';
+      document.getElementById('profileBtn').style.display = 'inline-flex';
+      document.getElementById('logoutBtn').style.display = 'inline-flex';
+      document.getElementById('userNameDisplay').textContent = currentUser.firstName;
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Шығуды растайсыз ба?')) {
+          sessionStorage.removeItem('dormsystem_session_current_user');
+          window.location.reload();
+        }
+      });
+    } else {
+      document.getElementById('authWarning').style.display = 'flex';
+      document.getElementById('statsContainer').style.display = 'none';
+    }
+
+    // Статус конфигурациясы
+    const STATUS_MAP = {
+      paid: { label: 'Төленді', class: 'success', icon: '✅' },
+      pending: { label: 'Күтуде', class: 'warning', icon: '⏳' },
+      overdue: { label: 'Мерзімі өтті', class: 'danger', icon: '❌' },
+      cancelled: { label: 'Бас тартылды', class: 'neutral', icon: '🚫' },
+    };
+
+    // 2. Барлық төлемдерді жүктеу
+    const allPayments = JSON.parse(localStorage.getItem('dormsystem_payments') || '[]');
+    
+    // 3. Студенттің өз төлемдерін сүзгілеу (СИНХРОНДЫ — 3 жолмен табады)
+    let myPayments = [];
+    if (currentUser) {
+      myPayments = allPayments.filter(p => 
+        p.studentId === currentUser.id || 
+        p.studentEmail === currentUser.email ||
+        p.studentName === `${currentUser.firstName} ${currentUser.lastName}` ||
+        p.studentName === currentUser.firstName
+      );
+    }
+
+    // 4. Статистика
+    const totalPaid = myPayments.filter(p => p.status === 'paid').reduce((s, p) => s + (p.amount || 0), 0);
+    const totalPending = myPayments.filter(p => p.status === 'pending').reduce((s, p) => s + (p.amount || 0), 0);
+    const totalOverdue = myPayments.filter(p => p.status === 'overdue').reduce((s, p) => s + (p.amount || 0), 0);
+
+    document.getElementById('statPaid').textContent = totalPaid.toLocaleString() + ' ₸';
+    document.getElementById('statPending').textContent = totalPending.toLocaleString() + ' ₸';
+    document.getElementById('statOverdue').textContent = totalOverdue.toLocaleString() + ' ₸';
+    document.getElementById('statTotal').textContent = myPayments.length;
+
+    // 5. Кестені рендерлеу
+    const paymentsBody = document.getElementById('paymentsBody');
+
+    if (!currentUser) {
+      paymentsBody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--color-text-muted);">
+        <div style="font-size:2rem;margin-bottom:8px;">🔒</div>Кіру қажет</td></tr>`;
+    } else if (myPayments.length === 0) {
+      paymentsBody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--color-text-muted);">
+        <div style="font-size:2rem;margin-bottom:8px;">📭</div>Сізде әзірге төлемдер жоқ</td></tr>`;
+    } else {
+      // Сұрыптау: жаңалары жоғарыда
+      const sorted = [...myPayments].sort((a, b) => new Date(b.createdAt || b.dueDate) - new Date(a.createdAt || a.dueDate));
+
+      paymentsBody.innerHTML = sorted.map(p => {
+        const st = STATUS_MAP[p.status] || STATUS_MAP.pending;
+        const dueDate = p.dueDate ? new Date(p.dueDate).toLocaleDateString('kk-KZ') : '—';
+        const paidDate = p.paidDate ? new Date(p.paidDate).toLocaleDateString('kk-KZ') : '—';
+        
+        return `
+          <tr>
+            <td><strong>${p.description || '—'}</strong></td>
+            <td><span style="font-weight:700;color:var(--color-primary);">${(p.amount||0).toLocaleString()} ₸</span></td>
+            <td>${dueDate}</td>
+            <td>${paidDate}</td>
+            <td><span class="text-xs text-muted">${p.receiptNumber || '—'}</span></td>
+            <td><span class="badge badge--${st.class}">${st.icon} ${st.label}</span></td>
+            <td>
+              ${p.status === 'pending' || p.status === 'overdue' ? `
+                <button class="btn btn-primary btn-sm" onclick="payNow('${p.id}')">💳 Төлеу</button>
+              ` : p.status === 'paid' ? `
+                <a href="payment-details.html?id=${p.id}" class="btn btn-ghost btn-sm">🧾 Квитанция</a>
+              ` : '—'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 6. Төлеу функциясы (демо)
+    window.payNow = function(paymentId) {
+      if (!confirm('Бұл төлемді төлегіңіз келе ме?\n\nБұл демо жүйе — нақты төлем жүргізілмейді.')) return;
+      
+      // Маңызды: Бұл жерде біз тек студенттің өз төлемін "төленді" деп белгілейміз
+      // Шын өмірде бұл жерде төлем шлюзі болар еді
+      
+      const payments = JSON.parse(localStorage.getItem('dormsystem_payments') || '[]');
+      const idx = payments.findIndex(p => p.id === paymentId);
+      
+      if (idx !== -1) {
+        payments[idx].status = 'paid';
+        payments[idx].paidDate = new Date().toISOString().slice(0, 10);
+        payments[idx].receiptNumber = 'RCP-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000);
+        
+        localStorage.setItem('dormsystem_payments', JSON.stringify(payments));
+        
+        showToast('Төлем сәтті өтті! ✅', 'success');
+        
+        // Бетті жаңарту (синхронды)
+        setTimeout(() => window.location.reload(), 800);
+      }
+    };
+
+    // 7. Бетке қайта оралғанда статус жаңарады (админ өзгертсе)
+    window.addEventListener('focus', () => {
+      const newPayments = JSON.parse(localStorage.getItem('dormsystem_payments') || '[]');
+      const newCount = newPayments.filter(p => currentUser && (p.studentId === currentUser.id || p.studentEmail === currentUser.email)).length;
+      if (newCount !== myPayments.length) {
+        window.location.reload();
+      }
+    });
+
+    console.log('✅ Студент төлемдер беті жүктелді');
+  </script>
+
+</body>
+</html>

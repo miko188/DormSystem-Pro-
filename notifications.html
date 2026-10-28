@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Хабарламалар — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/inputs.css">
+  <link rel="stylesheet" href="assets/css/components/selects.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+  
+  <style>
+    .notification-card {
+      display: flex;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .notification-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary-light);
+      transform: translateY(-2px);
+    }
+    .notification-card.is-unread {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+    }
+    .notification-card.is-unread::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 60%;
+      background: var(--color-primary);
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .notification-card__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    
+    .icon-success { background: var(--color-success-light); color: var(--color-success); }
+    .icon-info { background: var(--color-info-light); color: var(--color-info); }
+    .icon-warning { background: var(--color-warning-light); color: #b45309; }
+    .icon-danger { background: var(--color-danger-light); color: var(--color-danger); }
+    .icon-primary { background: var(--color-primary-light); color: var(--color-primary); }
+    
+    .notification-card__body { flex: 1; min-width: 0; }
+    .notification-card__title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+    .notification-card__text { font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 8px; }
+    .notification-card__meta { display: flex; gap: 12px; align-items: center; font-size: 0.75rem; color: var(--color-text-muted); flex-wrap: wrap; }
+    .notification-card__actions { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <nav class="header__nav">
+        <a href="index.html" class="header__link">🏠 Басты бет</a>
+        <a href="rooms.html" class="header__link">🚪 Бөлмелер</a>
+        <a href="my-bookings.html" class="header__link">📝 Өтінімдер</a>
+        <a href="payments.html" class="header__link">💳 Төлемдер</a>
+        <a href="requests.html" class="header__link">📬 Өтініштер</a>
+      </nav>
+      <div class="header__actions">
+        <a href="notifications.html" class="notification-btn is-active">🔔<span class="notification-btn__dot" id="notifDot" style="display:none;"></span></a>
+        <a href="login.html" class="btn btn-secondary btn-sm" id="loginBtn">🔑 Кіру</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="registerBtn">✨ Тіркелу</a>
+        <a href="profile.html" class="btn btn-secondary btn-sm" id="profileBtn" style="display:none;">👤 <span id="userNameDisplay">Профиль</span></a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">🚪 Шығу</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container container-md">
+      
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h1 class="page-title">🔔 Хабарламалар</h1>
+          <p class="page-subtitle">Жеке хабарламалар және әкімшілік жаңалықтар</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="markAllRead()">✅ Барлығын оқылды деп белгілеу</button>
+        </div>
+      </div>
+
+      <div id="authWarning" class="alert alert--warning" style="display:none;margin-bottom:var(--space-5);">
+        <div>
+          <strong>⚠️ Назар аударыңыз!</strong> Хабарламаларыңызды көру үшін кіруіңіз керек.
+          <a href="login.html" style="color:var(--color-primary);font-weight:600;text-decoration:underline;">Кіру →</a>
+        </div>
+      </div>
+
+      <!-- Сүзгілер -->
+      <div id="filtersContainer" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:var(--space-5);align-items:end;">
+        <div style="flex:1;min-width:200px;">
+          <label class="form-label">Іздеу</label>
+          <input type="text" id="searchInput" class="input" placeholder="Хабарлама мәтіні...">
+        </div>
+        <div style="min-width:150px;">
+          <label class="form-label">Статус</label>
+          <select id="statusFilter" class="select">
+            <option value="">Барлығы</option>
+            <option value="unread">Оқылмаған</option>
+            <option value="read">Оқылған</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" onclick="resetFilters()">🔄 Тазалау</button>
+      </div>
+
+      <div id="notificationsList" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2024 DormSystem Pro — Студенттік жатақхананы басқару жүйесі</p>
+    </div>
+  </footer>
+
+  <script>
+    // 1. Toast
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div'); c.id = 'toast-container'; c.className = 'toast-container';
+        document.body.appendChild(c); return c;
+      })();
+      const icons = { success: '✅', danger: '❌', warning: '⚠️', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__icon">${icons[type]||'ℹ️'}</div><div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3500);
+    }
+
+    // 2. Сессия
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) { try { currentUser = JSON.parse(sessionData); } catch(e) {} }
+
+    if (currentUser && currentUser.id) {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('registerBtn').style.display = 'none';
+      document.getElementById('profileBtn').style.display = 'inline-flex';
+      document.getElementById('logoutBtn').style.display = 'inline-flex';
+      document.getElementById('userNameDisplay').textContent = currentUser.firstName;
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Шығуды растайсыз ба?')) {
+          sessionStorage.removeItem('dormsystem_session_current_user');
+          window.location.reload();
+        }
+      });
+    } else {
+      document.getElementById('authWarning').style.display = 'flex';
+      document.getElementById('filtersContainer').style.display = 'none';
+    }
+
+    // 3. Деректерді біріктіру (Жеке + Жалпы)
+    function getAllNotifications() {
+      const personal = JSON.parse(localStorage.getItem('dormsystem_notifications') || '[]');
+      const announcements = JSON.parse(localStorage.getItem('dormsystem_announcements') || '[]');
+
+      // Студенттің жеке хабарламаларын сүзгілеу
+      let myPersonal = [];
+      if (currentUser) {
+        myPersonal = personal.filter(n => 
+          n.userId === currentUser.id || 
+          n.userEmail === currentUser.email ||
+          n.userName === `${currentUser.firstName} ${currentUser.lastName}`
+        );
+      }
+
+      // Әкімшілік хабарландыруларды форматтау
+      const formattedAnnouncements = announcements.map(a => ({
+        id: a.id,
+        isAnnouncement: true, // 🚨 Бұл хабарландыру екенін білдіреді
+        type: a.type === 'warning' ? 'warning' : (a.type === 'success' ? 'success' : 'info'),
+        title: a.title,
+        text: a.text,
+        createdAt: a.createdAt,
+        read: true, // Жалпы хабарландырулар әдепкіде оқылған деп есептеледі (немесе жеке сақтауға болады)
+        link: null,
+      }));
+
+      // Барлығын біріктіру
+      return [...myPersonal, ...formattedAnnouncements];
+    }
+
+    // 4. Оқылған хабарландыруларды бақылау
+    // (Жалпы хабарландыруларды оқылды деп белгілеу үшін localStorage-та жеке массив ұстаймыз)
+    function getReadAnnouncements() {
+      return JSON.parse(localStorage.getItem('dormsystem_read_announcements') || '[]');
+    }
+    function markAnnouncementRead(id) {
+      const readList = getReadAnnouncements();
+      if (!readList.includes(id)) {
+        readList.push(id);
+        localStorage.setItem('dormsystem_read_announcements', JSON.stringify(readList));
+      }
+    }
+
+    // 5. Рендерлеу
+    const notificationsList = document.getElementById('notificationsList');
+    let allData = [];
+
+    function render() {
+      if (!currentUser) {
+        notificationsList.innerHTML = `<div class="empty-state"><div class="empty-state__icon">🔒</div><h3 class="empty-state__title">Кіру қажет</h3></div>`;
+        return;
+      }
+
+      allData = getAllNotifications();
+      const readAnnouncements = getReadAnnouncements();
+
+      // Оқылған/оқылмаған статусын нақтылау
+      allData = allData.map(n => {
+        if (n.isAnnouncement) {
+          return { ...n, read: readAnnouncements.includes(n.id) };
+        }
+        return n;
+      });
+
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const status = document.getElementById('statusFilter').value;
+
+      let filtered = allData.filter(n => {
+        if (search) {
+          const haystack = `${n.title} ${n.text}`.toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        if (status === 'unread' && n.read) return false;
+        if (status === 'read' && !n.read) return false;
+        return true;
+      });
+
+      // Сұрыптау: оқылмағандар жоғарыда, содан кейін жаңалары
+      filtered.sort((a, b) => {
+        if (a.read !== b.read) return a.read ? 1 : -1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      if (filtered.length === 0) {
+        notificationsList.innerHTML = `<div class="empty-state"><div class="empty-state__icon">📭</div><h3 class="empty-state__title">Хабарламалар жоқ</h3><p class="empty-state__text">Сізде әзірге ешқандай хабарлама жоқ</p></div>`;
+        updateDot();
+        return;
+      }
+
+      const TYPE_MAP = {
+        success: { icon: '✅', class: 'icon-success' },
+        info: { icon: 'ℹ️', class: 'icon-info' },
+        warning: { icon: '⚠️', class: 'icon-warning' },
+        danger: { icon: '❌', class: 'icon-danger' },
+      };
+
+      notificationsList.innerHTML = filtered.map(n => {
+        const t = TYPE_MAP[n.type] || TYPE_MAP.info;
+        const date = new Date(n.createdAt).toLocaleString('kk-KZ', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <div class="notification-card ${!n.read ? 'is-unread' : ''}">
+            <div class="notification-card__icon ${t.class}">${t.icon}</div>
+            <div class="notification-card__body">
+              <div class="notification-card__title">
+                ${n.isAnnouncement ? '📢 ' : ''}${n.title}
+              </div>
+              <div class="notification-card__text">${n.text}</div>
+              <div class="notification-card__meta">
+                <span>🕐 ${date}</span>
+                ${n.link ? `<a href="${n.link}" style="color:var(--color-primary);font-weight:600;">Толығырақ →</a>` : ''}
+              </div>
+            </div>
+            <div class="notification-card__actions">
+              ${!n.read ? `<button class="btn btn-ghost btn-sm" onclick="markRead('${n.id}', ${n.isAnnouncement})" title="Оқылды деп белгілеу">✅</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateDot();
+    }
+
+    // 6. Оқылды деп белгілеу
+    window.markRead = function(id, isAnnouncement) {
+      if (isAnnouncement) {
+        markAnnouncementRead(id);
+      } else {
+        const all = JSON.parse(localStorage.getItem('dormsystem_notifications') || '[]');
+        const idx = all.findIndex(n => n.id === id);
+        if (idx !== -1) {
+          all[idx].read = true;
+          localStorage.setItem('dormsystem_notifications', JSON.stringify(all));
+        }
+      }
+      render();
+    };
+
+    window.markAllRead = function() {
+      if (!confirm('Барлық хабарламаларды оқылды деп белгілегіңіз келе ме?')) return;
+
+      // 1. Жеке хабарламалар
+      const personal = JSON.parse(localStorage.getItem('dormsystem_notifications') || '[]');
+      personal.forEach(n => {
+        if (n.userId === currentUser.id || n.userEmail === currentUser.email) n.read = true;
+      });
+      localStorage.setItem('dormsystem_notifications', JSON.stringify(personal));
+
+      // 2. Жалпы хабарландырулар
+      const announcements = JSON.parse(localStorage.getItem('dormsystem_announcements') || '[]');
+      const readList = getReadAnnouncements();
+      announcements.forEach(a => {
+        if (!readList.includes(a.id)) readList.push(a.id);
+      });
+      localStorage.setItem('dormsystem_read_announcements', JSON.stringify(readList));
+
+      showToast('Барлығы оқылды деп белгіленді ✅', 'success');
+      render();
+    };
+
+    // 7. Қызыл нүкте
+    function updateDot() {
+      const unread = allData.filter(n => !n.read).length;
+      const dot = document.getElementById('notifDot');
+      if (dot) dot.style.display = unread > 0 ? 'block' : 'none';
+    }
+
+    // 8. Фильтрлер
+    document.getElementById('searchInput').addEventListener('input', render);
+    document.getElementById('statusFilter').addEventListener('change', render);
+    window.resetFilters = function() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('statusFilter').value = '';
+      render();
+    };
+
+    // 9. Жаңару (әкімші жаңа хабарландыру қосса)
+    window.addEventListener('focus', render);
+
+    // 10. Бастапқы рендер
+    render();
+  </script>
+
+</body>
+</html>

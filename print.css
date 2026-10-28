@@ -1,0 +1,10 @@
+/* ============================================
+   PRINT — Басып шығару
+   ============================================ */
+
+@media print {
+  .header, .footer, .sidebar, .no-print { display: none !important; }
+  body { background: white; color: black; }
+  .card, .table-wrapper { box-shadow: none; border: 1px solid #ccc; }
+  a { color: black; text-decoration: underline; }
+}

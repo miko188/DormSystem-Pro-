@@ -1,0 +1,11 @@
+/* ============================================
+   TABLET — Планшеттер (640-968px)
+   ============================================ */
+
+@media (min-width: 641px) and (max-width: 968px) {
+  .container { padding-inline: var(--space-5); }
+
+  .sidebar { width: 220px; }
+
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}

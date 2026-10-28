@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Бөлмелер — DormSystem Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/inputs.css">
+  <link rel="stylesheet" href="assets/css/components/selects.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/filters.css">
+  <link rel="stylesheet" href="assets/css/components/search.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <nav class="header__nav">
+        <a href="index.html" class="header__link">🏠 Басты бет</a>
+        <a href="rooms.html" class="header__link is-active">🚪 Бөлмелер</a>
+        <a href="my-bookings.html" class="header__link">📝 Өтінімдер</a>
+        <a href="payments.html" class="header__link">💳 Төлемдер</a>
+        <a href="requests.html" class="header__link">📬 Өтініштер</a>
+      </nav>
+      <div class="header__actions">
+        <a href="notifications.html" class="notification-btn">🔔<span class="notification-btn__dot"></span></a>
+        <a href="login.html" class="btn btn-secondary btn-sm" id="loginBtn">🔑 Кіру</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="registerBtn">✨ Тіркелу</a>
+        <a href="profile.html" class="btn btn-secondary btn-sm" id="profileBtn" style="display:none;">👤 <span id="userNameDisplay">Профиль</span></a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">🚪 Шығу</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title">🚪 Бөлмелер каталогы</h1>
+        <p class="page-subtitle">Барлық қолжетімді бөлмелерді қарап, өзіңізге ұнағанын таңдаңыз</p>
+      </div>
+
+      <!-- Фильтрлер -->
+      <div class="filters">
+        <div class="filter-group" style="min-width:220px;">
+          <label class="filter-group__label">Іздеу</label>
+          <div class="search-bar">
+            <span class="search-bar__icon">🔍</span>
+            <input id="searchInput" type="text" class="search-bar__input" placeholder="Бөлме нөмірі немесе ғимарат...">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label class="filter-group__label">Ғимарат</label>
+          <select id="buildingFilter" class="select">
+            <option value="">Барлығы</option>
+            <!-- JS толтырады -->
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-group__label">Статус</label>
+          <select id="statusFilter" class="select">
+            <option value="">Барлығы</option>
+            <option value="available">Бос</option>
+            <option value="partial">Ішінара толы</option>
+            <option value="full">Толы</option>
+            <option value="maintenance">Жөндеуде</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-group__label">Сыйымдылық</label>
+          <select id="capacityFilter" class="select">
+            <option value="">Барлығы</option>
+            <option value="2">2 орындық</option>
+            <option value="3">3 орындық</option>
+            <option value="4">4 орындық</option>
+          </select>
+        </div>
+        <div class="filters__actions">
+          <button id="resetFilters" class="btn btn-secondary">🔄 Тазалау</button>
+        </div>
+      </div>
+
+      <div id="roomsCount" class="text-sm text-secondary" style="margin-bottom:var(--space-4);font-weight:500;">Жүктелуде...</div>
+
+      <div id="roomsGrid" class="grid grid-auto-md stagger"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2024 DormSystem Pro — Студенттік жатақхананы басқару жүйесі</p>
+    </div>
+  </footer>
+
+  <script>
+    // 1. Сессия
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) {
+      try { currentUser = JSON.parse(sessionData); } catch(e) {}
+    }
+
+    if (currentUser && currentUser.id) {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('registerBtn').style.display = 'none';
+      document.getElementById('profileBtn').style.display = 'inline-flex';
+      document.getElementById('logoutBtn').style.display = 'inline-flex';
+      document.getElementById('userNameDisplay').textContent = currentUser.firstName;
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Шығуды растайсыз ба?')) {
+          sessionStorage.removeItem('dormsystem_session_current_user');
+          window.location.reload();
+        }
+      });
+    }
+
+    // 2. Деректер (Тек әкімші қосқан бөлмелер!)
+    const allRooms = JSON.parse(localStorage.getItem('dormsystem_rooms') || '[]');
+    const buildings = JSON.parse(localStorage.getItem('dormsystem_buildings') || '[]');
+    
+    // 3. Ғимараттарды фильтрге толтыру
+    const buildingFilter = document.getElementById('buildingFilter');
+    buildings.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.name; opt.textContent = b.name;
+      buildingFilter.appendChild(opt);
+    });
+
+    // 4. Константалар
+    const STATUS_MAP = {
+      available: { label: 'Бос', class: 'success' },
+      partial: { label: 'Ішінара толы', class: 'warning' },
+      full: { label: 'Толы', class: 'danger' },
+      maintenance: { label: 'Жөндеуде', class: 'neutral' },
+    };
+
+    const AMENITY_ICONS = {
+      wifi: '📶', shower: '🚿', heating: '🔥', desk: '🪑',
+      balcony: '🌅', fridge: '❄️', ac: '❄️',
+    };
+
+    // 5. Рендерлеу
+    const grid = document.getElementById('roomsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const capacityFilter = document.getElementById('capacityFilter');
+    const resetBtn = document.getElementById('resetFilters');
+    const countEl = document.getElementById('roomsCount');
+
+    function render() {
+      let rooms = allRooms;
+      const search = searchInput.value.toLowerCase().trim();
+      const building = buildingFilter.value;
+      const status = statusFilter.value;
+      const capacity = capacityFilter.value;
+
+      if (search) {
+        rooms = rooms.filter(r => r.number.toLowerCase().includes(search) || (r.buildingName || '').toLowerCase().includes(search));
+      }
+      if (building) rooms = rooms.filter(r => r.buildingName === building);
+      if (status) rooms = rooms.filter(r => r.status === status);
+      if (capacity) rooms = rooms.filter(r => r.capacity === Number(capacity));
+
+      countEl.textContent = `${rooms.length} бөлме табылды`;
+
+      if (rooms.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1;">
+            <div class="empty-state__icon">🔍</div>
+            <h3 class="empty-state__title">Бөлме табылмады</h3>
+            <p class="empty-state__text">Әзірге бөлмелер қосылмаған немесе фильтрге сай емес</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = rooms.map(room => {
+        const free = (room.capacity || 0) - (room.occupied || 0);
+        const st = STATUS_MAP[room.status] || STATUS_MAP.available;
+        const amenities = (room.amenities || []).slice(0, 3).map(a => AMENITY_ICONS[a] || '•').join(' ');
+
+        return `
+          <div class="room-card">
+            <div class="room-card__image">
+              🚪
+              <span class="room-card__badge">
+                <span class="badge badge--${st.class}">${st.label}</span>
+              </span>
+            </div>
+            <div class="room-card__body">
+              <h3 class="room-card__title">№${room.number} бөлме</h3>
+              <div class="room-card__meta">
+                <span class="room-card__meta-item">🏢 ${room.buildingName}</span>
+                <span class="room-card__meta-item">📐 ${room.floorNumber}-қабат</span>
+              </div>
+              <div class="room-card__meta">
+                <span class="room-card__meta-item">👥 ${room.occupied || 0}/${room.capacity || 0} орын</span>
+                <span class="room-card__meta-item">${amenities}</span>
+              </div>
+              <div class="room-card__footer">
+                <div class="room-card__price">${(room.price || 0).toLocaleString()} ₸<span>/ай</span></div>
+                <button class="btn btn-primary btn-sm" onclick="applyForRoom('${room.id}')">
+                  📝 Өтінім беру
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 6. Өтінім беру
+    window.applyForRoom = function(roomId) {
+      if (!currentUser) {
+        alert('Өтінім беру үшін кіруіңіз керек!');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const room = allRooms.find(r => r.id === roomId);
+      if (!room) return;
+
+      const free = (room.capacity || 0) - (room.occupied || 0);
+      if (free <= 0) {
+        alert('Бұл бөлмеде бос орын жоқ!');
+        return;
+      }
+
+      const existingApps = JSON.parse(localStorage.getItem('dormsystem_applications') || '[]');
+      const hasActiveApp = existingApps.find(a => 
+        a.roomId === roomId && 
+        (a.studentId === currentUser.id || a.studentEmail === currentUser.email) &&
+        (a.status === 'submitted' || a.status === 'reviewing' || a.status === 'approved')
+      );
+
+      if (hasActiveApp) {
+        if (hasActiveApp.status === 'approved') {
+          alert('Сіз бұл бөлмеге қоныстанғансыз!');
+        } else {
+          alert('Сіз бұл бөлмеге өтінім бергенсіз. Әкімшінің жауабын күтіңіз.');
+        }
+        return;
+      }
+
+      if (!confirm(`№${room.number} бөлмеге өтінім бергіңіз келе ме?\n\nБағасы: ${(room.price || 0).toLocaleString()} ₸/ай\nБос орын: ${free}`)) return;
+
+      const newApp = {
+        id: 'app_' + Date.now(),
+        studentId: currentUser.id,
+        studentName: `${currentUser.firstName} ${currentUser.lastName}`,
+        studentEmail: currentUser.email,
+        roomId: room.id,
+        roomNumber: room.number,
+        buildingName: room.buildingName,
+        roomPrice: room.price,
+        status: 'submitted',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        comment: '',
+        adminComment: '',
+      };
+
+      existingApps.push(newApp);
+      localStorage.setItem('dormsystem_applications', JSON.stringify(existingApps));
+
+      alert('✅ Өтініміңіз әкімшіге жіберілді!');
+      window.location.href = 'my-bookings.html';
+    };
+
+    // 7. Фильтрлер
+    searchInput.addEventListener('input', render);
+    buildingFilter.addEventListener('change', render);
+    statusFilter.addEventListener('change', render);
+    capacityFilter.addEventListener('change', render);
+    resetBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      buildingFilter.value = '';
+      statusFilter.value = '';
+      capacityFilter.value = '';
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

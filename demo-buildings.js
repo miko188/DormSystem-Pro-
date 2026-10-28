@@ -1,0 +1,32 @@
+export const demoBuildings = [
+  {
+    id: 'building_1',
+    name: '№1 жатақхана',
+    address: 'Алматы, Абай даңғылы 50',
+    floors: 5,
+    roomsCount: 40,
+    totalBeds: 160,
+    yearBuilt: 2010,
+    status: 'active',
+  },
+  {
+    id: 'building_2',
+    name: '№2 жатақхана',
+    address: 'Алматы, Абай даңғылы 52',
+    floors: 4,
+    roomsCount: 32,
+    totalBeds: 128,
+    yearBuilt: 2015,
+    status: 'active',
+  },
+  {
+    id: 'building_3',
+    name: '№3 жатақхана',
+    address: 'Алматы, Абай даңғылы 54',
+    floors: 3,
+    roomsCount: 24,
+    totalBeds: 96,
+    yearBuilt: 2018,
+    status: 'maintenance',
+  },
+];

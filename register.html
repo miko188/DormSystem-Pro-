@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тіркелу — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/forms.css">
+  <link rel="stylesheet" href="assets/css/components/inputs.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/checkboxes.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+</head>
+<body style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--gradient-hero);">
+
+  <div style="width:100%;max-width:480px;">
+    <div class="card animate-fade-in-up" style="padding:var(--space-8);">
+      <div style="text-align:center;margin-bottom:var(--space-6);">
+        <div style="width:64px;height:64px;border-radius:var(--radius-lg);background:var(--gradient-primary);display:inline-flex;align-items:center;justify-content:center;color:white;font-size:1.75rem;font-weight:800;margin-bottom:var(--space-4);">D</div>
+        <h1 style="font-size:1.5rem;margin-bottom:var(--space-2);">Тіркелу</h1>
+        <p class="text-secondary text-sm">Жаңа аккаунт жасау</p>
+      </div>
+
+      <form id="registerForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label form-label--required">Аты</label>
+            <input type="text" id="firstName" class="input" placeholder="Айдос" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label form-label--required">Тегі</label>
+            <input type="text" id="lastName" class="input" placeholder="Серікұлы" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-label--required">Email</label>
+          <input type="email" id="email" class="input" placeholder="student@demo.kz" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Телефон</label>
+          <input type="tel" id="phone" class="input" placeholder="+7 701 234 56 78">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-label--required">Құпиясөз</label>
+          <input type="password" id="password" class="input" placeholder="Кемінде 6 таңба" required minlength="6">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-label--required">Құпиясөзді қайталау</label>
+          <input type="password" id="confirmPassword" class="input" placeholder="••••••" required>
+          <span id="matchError" style="color:var(--color-danger);font-size:0.75rem;display:none;">Құпиясөздер сәйкес емес</span>
+        </div>
+
+        <label class="checkbox" style="margin-bottom:var(--space-5);font-size:0.875rem;">
+          <input type="checkbox" id="agree" required>
+          <span>Мен шарттармен келісемін</span>
+        </label>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn">Тіркелу →</button>
+      </form>
+
+      <div style="text-align:center;margin-top:var(--space-4);font-size:0.875rem;">
+        <span class="text-secondary">Аккаунтыңыз бар ма?</span>
+        <a href="login.html" style="color:var(--color-primary);font-weight:600;margin-left:4px;">Кіру →</a>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:var(--space-4);font-size:0.8125rem;">
+      <a href="index.html" style="color:rgba(255,255,255,0.85);">← Басты бетке оралу</a>
+    </p>
+  </div>
+
+  <script>
+    // Toast функциясы
+    function showToast(message, type = 'danger') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div');
+        c.id = 'toast-container';
+        c.className = 'toast-container';
+        document.body.appendChild(c);
+        return c;
+      })();
+      
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 300);
+      }, 3500);
+    }
+
+    const form = document.getElementById('registerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const pwd = document.getElementById('password');
+    const confirmPwd = document.getElementById('confirmPassword');
+    const matchError = document.getElementById('matchError');
+
+    // Пароль сәйкестігін тексеру
+    function checkMatch() {
+      if (confirmPwd.value && confirmPwd.value !== pwd.value) {
+        matchError.style.display = 'block';
+        confirmPwd.classList.add('is-error');
+      } else {
+        matchError.style.display = 'none';
+        confirmPwd.classList.remove('is-error');
+      }
+    }
+    pwd.addEventListener('input', checkMatch);
+    confirmPwd.addEventListener('input', checkMatch);
+
+    // Форманы жіберу
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = pwd.value;
+      const confirmPassword = confirmPwd.value;
+      const agree = document.getElementById('agree').checked;
+
+      // Валидация
+      if (!firstName || !lastName) return showToast('Аты мен тегі міндетті');
+      if (!email || !email.includes('@')) return showToast('Email дұрыс емес');
+      if (password.length < 6) return showToast('Құпиясөз кемінде 6 таңба болуы керек');
+      if (password !== confirmPassword) return showToast('Құпиясөздер сәйкес емес');
+      if (!agree) return showToast('Шарттармен келісуіңіз керек');
+
+      submitBtn.classList.add('is-loading');
+      submitBtn.disabled = true;
+
+      // Деректерді сақтау
+      setTimeout(() => {
+        try {
+          const users = JSON.parse(localStorage.getItem('dormsystem_users') || '[]');
+          
+          if (users.find(u => u.email === email)) {
+            throw new Error('Бұл email тіркелген');
+          }
+
+          const newUser = {
+            id: 'user_' + Date.now(),
+            email,
+            password,
+            firstName,
+            lastName,
+            phone,
+            role: 'student',
+            createdAt: new Date().toISOString(),
+          };
+
+          users.push(newUser);
+          localStorage.setItem('dormsystem_users', JSON.stringify(users));
+
+          // Сессияны ашу
+          const { password: _, ...safeUser } = newUser;
+          sessionStorage.setItem('dormsystem_session_current_user', JSON.stringify(safeUser));
+
+          showToast(`Қош келдіңіз, ${firstName}! 🎉`, 'success');
+          
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 900);
+
+        } catch (err) {
+          showToast(err.message);
+          submitBtn.classList.remove('is-loading');
+          submitBtn.disabled = false;
+        }
+      }, 400);
+    });
+  </script>
+</body>
+</html>

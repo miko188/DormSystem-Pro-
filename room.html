@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Бөлме — DormSystem Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/alerts.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/avatars.css">
+  <link rel="stylesheet" href="assets/css/components/timeline.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+  <style>
+    .room-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+    }
+    @media (max-width: 900px) {
+      .room-detail-grid { grid-template-columns: 1fr; }
+    }
+    .bed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--space-3);
+    }
+    .bed-item {
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      border: 2px solid var(--color-border);
+      text-align: center;
+      transition: all var(--transition-fast);
+      background: var(--color-surface);
+    }
+    .bed-item--free {
+      border-color: var(--color-success);
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+    .bed-item--occupied {
+      border-color: var(--color-border);
+      background: var(--color-surface-alt);
+      color: var(--color-text-muted);
+      opacity: 0.7;
+    }
+    .bed-item__icon { font-size: 1.75rem; margin-bottom: var(--space-2); }
+    .bed-item__label { font-size: 0.75rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <nav class="header__nav">
+        <a href="index.html" class="header__link">🏠 Басты бет</a>
+        <a href="rooms.html" class="header__link is-active">🚪 Бөлмелер</a>
+        <a href="my-bookings.html" class="header__link">📝 Өтінімдер</a>
+        <a href="payments.html" class="header__link">💳 Төлемдер</a>
+        <a href="requests.html" class="header__link">📬 Өтініштер</a>
+      </nav>
+      <div class="header__actions">
+        <a href="notifications.html" class="notification-btn" aria-label="Хабарламалар">
+          🔔<span class="notification-btn__dot"></span>
+        </a>
+        <a href="login.html" class="btn btn-secondary btn-sm" id="loginBtn">🔑 Кіру</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="registerBtn">✨ Тіркелу</a>
+        <a href="profile.html" class="btn btn-secondary btn-sm" id="profileBtn" style="display:none;">
+          👤 <span id="userNameDisplay">Профиль</span>
+        </a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">🚪 Шығу</button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Мәзір">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="mobile-menu__link">🏠 Басты бет</a>
+    <a href="rooms.html" class="mobile-menu__link is-active">🚪 Бөлмелер</a>
+    <a href="my-bookings.html" class="mobile-menu__link">📝 Өтінімдер</a>
+    <a href="payments.html" class="mobile-menu__link">💳 Төлемдер</a>
+    <a href="requests.html" class="mobile-menu__link">📬 Өтініштер</a>
+    <a href="documents.html" class="mobile-menu__link">📁 Құжаттар</a>
+    <a href="profile.html" class="mobile-menu__link">👤 Профиль</a>
+  </div>
+
+  <!-- ============ MAIN ============ -->
+  <main class="page">
+    <div class="container" id="roomDetail">
+      <!-- Skeleton -->
+      <div class="skeleton skeleton--text" style="width:120px;margin-bottom:16px;"></div>
+      <div class="skeleton skeleton--title" style="width:60%;margin-bottom:24px;"></div>
+      <div class="skeleton skeleton--card"></div>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2024 DormSystem Pro — Студенттік жатақхананы басқару жүйесі</p>
+      <div class="footer__links">
+        <a href="info/privacy.html">Құпиялылық</a>
+        <a href="info/terms.html">Шарттар</a>
+        <a href="info/contacts.html">Байланыс</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ SCRIPT ============ -->
+  <script type="module">
+    import { seedIfNeeded } from './assets/js/storage/seed-data.js';
+    import { roomService } from './assets/js/services/room-service.js';
+    import { session } from './assets/js/auth/session-manager.js';
+    import { ROOM_STATUS_LABELS, ROOM_STATUS_BADGE } from './assets/js/config/constants.js';
+    import { formatKzt } from './assets/js/utils/currency-utils.js';
+    import { toastError, toastSuccess } from './assets/js/components/toast.js';
+
+    // Seed
+    seedIfNeeded();
+
+    // Мобиль мәзір
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn?.addEventListener('click', () => {
+      mobileMenu.classList.toggle('is-open');
+      mobileMenuBtn.textContent = mobileMenu.classList.contains('is-open') ? '✕' : '☰';
+    });
+
+    // Сессия
+    const user = session.get();
+    if (user) {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('registerBtn').style.display = 'none';
+      document.getElementById('profileBtn').style.display = 'inline-flex';
+      document.getElementById('logoutBtn').style.display = 'inline-flex';
+      document.getElementById('userNameDisplay').textContent = user.firstName;
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Шығуды растайсыз ба?')) {
+          session.clear();
+          window.location.reload();
+        }
+      });
+    }
+
+    // === ROOM DETAIL ===
+    const AMENITY_DATA = {
+      wifi: { icon: '📶', label: 'Wi-Fi' },
+      shower: { icon: '🚿', label: 'Душ' },
+      heating: { icon: '🔥', label: 'Жылыту' },
+      desk: { icon: '🪑', label: 'Үстел' },
+      balcony: { icon: '🌅', label: 'Балкон' },
+      fridge: { icon: '❄️', label: 'Тоңазытқыш' },
+      ac: { icon: '💨', label: 'Кондиционер' },
+    };
+
+    const container = document.getElementById('roomDetail');
+
+    // URL-ден id алу
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('id');
+
+    // Барлық бөлмелерді аламыз (навигация үшін)
+    const allRooms = roomService.all();
+
+    function renderNotFound() {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">❌</div>
+          <h3 class="empty-state__title">Бөлме табылмады</h3>
+          <p class="empty-state__text">Мүмкін сілтеме ескірген немесе бөлме жойылған</p>
+          <a href="rooms.html" class="btn btn-primary">🚪 Бөлмелерге оралу</a>
+        </div>
+      `;
+    }
+
+    if (!roomId) {
+      renderNotFound();
+    } else {
+      const room = roomService.byId(roomId);
+
+      if (!room) {
+        renderNotFound();
+      } else {
+        const free = room.capacity - room.occupied;
+        const fillPercent = Math.round((room.occupied / room.capacity) * 100);
+
+        // Көршілес бөлмелер (сол ғимараттан)
+        const related = allRooms
+          .filter(r => r.buildingId === room.buildingId && r.id !== room.id)
+          .slice(0, 3);
+
+        // Орындар (beds) — демо
+        const beds = Array.from({ length: room.capacity }, (_, i) => ({
+          number: i + 1,
+          occupied: i < room.occupied,
+        }));
+
+        // Синхронды URL — картаны алмастыру
+        document.title = `№${room.number} бөлме — DormSystem Pro`;
+
+        container.innerHTML = `
+          <!-- Breadcrumbs -->
+          <nav class="breadcrumbs" style="display:flex;gap:8px;align-items:center;font-size:0.875rem;color:var(--color-text-muted);margin-bottom:var(--space-4);flex-wrap:wrap;">
+            <a href="index.html" style="color:var(--color-text-secondary);">🏠 Басты бет</a>
+            <span>/</span>
+            <a href="rooms.html" style="color:var(--color-text-secondary);">🚪 Бөлмелер</a>
+            <span>/</span>
+            <span style="color:var(--color-text);font-weight:500;">№${room.number}</span>
+          </nav>
+
+          <div class="card" style="padding:var(--space-8);">
+            <div class="room-detail-grid">
+
+              <!-- LEFT: Сурет + Орындар -->
+              <div>
+                <div style="aspect-ratio:4/3;border-radius:var(--radius-lg);background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;color:white;font-size:5rem;margin-bottom:var(--space-5);position:relative;overflow:hidden;">
+                  🚪
+                  <span style="position:absolute;top:16px;right:16px;">
+                    <span class="badge badge--${ROOM_STATUS_BADGE[room.status]}">
+                      ${ROOM_STATUS_LABELS[room.status]}
+                    </span>
+                  </span>
+                </div>
+
+                <h3 style="font-size:1.125rem;margin-bottom:var(--space-3);">🛏️ Орындар</h3>
+                <div class="bed-grid">
+                  ${beds.map(b => `
+                    <div class="bed-item ${b.occupied ? 'bed-item--occupied' : 'bed-item--free'}">
+                      <div class="bed-item__icon">${b.occupied ? '🛏️' : '➕'}</div>
+                      <div class="bed-item__label">Орын №${b.number}</div>
+                      <div style="font-size:0.6875rem;margin-top:2px;">${b.occupied ? 'Бос емес' : 'Бос'}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- RIGHT: Ақпарат -->
+              <div>
+                <h1 style="font-size:2rem;margin-bottom:var(--space-2);">№${room.number} бөлме</h1>
+                <p class="text-secondary" style="margin-bottom:var(--space-5);">${room.description}</p>
+
+                <!-- Негізгі параметрлер -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-5);">
+                  <div>
+                    <span class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Ғимарат</span>
+                    <div style="font-weight:600;margin-top:2px;">🏢 ${room.buildingName}</div>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Қабат</span>
+                    <div style="font-weight:600;margin-top:2px;">📐 ${room.floorNumber}-қабат</div>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Аудан</span>
+                    <div style="font-weight:600;margin-top:2px;">📏 ${room.area} м²</div>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Сыйымдылық</span>
+                    <div style="font-weight:600;margin-top:2px;">👥 ${room.capacity} орын</div>
+                  </div>
+                </div>
+
+                <!-- Толу индикаторы -->
+                <div style="margin-bottom:var(--space-5);">
+                  <div style="display:flex;justify-content:space-between;font-size:0.875rem;margin-bottom:6px;">
+                    <span class="text-secondary">Толу деңгейі</span>
+                    <span style="font-weight:600;">${room.occupied} / ${room.capacity} (${free} бос)</span>
+                  </div>
+                  <div class="progress" style="height:8px;">
+                    <div class="progress__bar" style="width:${fillPercent}%; background:${free === 0 ? 'var(--color-danger)' : free === room.capacity ? 'var(--color-success)' : 'var(--gradient-primary)'};"></div>
+                  </div>
+                </div>
+
+                <!-- Қолайлықтар -->
+                ${room.amenities && room.amenities.length ? `
+                  <div style="margin-bottom:var(--space-5);">
+                    <h3 style="font-size:1rem;margin-bottom:var(--space-3);">✨ Қолайлықтар</h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:var(--space-2);">
+                      ${room.amenities.map(a => {
+                        const d = AMENITY_DATA[a] || { icon: '•', label: a };
+                        return `<span class="badge badge--neutral">${d.icon} ${d.label}</span>`;
+                      }).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+
+                <!-- Баға -->
+                <div style="padding:var(--space-5);background:var(--color-surface-alt);border-radius:var(--radius-lg);margin-bottom:var(--space-5);">
+                  <span class="text-sm text-secondary">Айлық төлем</span>
+                  <div style="font-size:2rem;font-weight:700;color:var(--color-primary);line-height:1.2;">
+                    ${formatKzt(room.price)}
+                  </div>
+                  <span class="text-xs text-muted">Барлық коммуналдық қызметтер кіреді</span>
+                </div>
+
+                <!-- Әрекет батырмалары -->
+                ${free > 0 ? `
+                  <div style="display:flex;flex-direction:column;gap:var(--space-2);">
+                    <a href="booking.html?room=${room.id}" class="btn btn-primary btn-lg btn-block">
+                      📝 Өтінім беру
+                    </a>
+                    <a href="rooms.html" class="btn btn-secondary btn-block">
+                      ← Бөлмелерге оралу
+                    </a>
+                  </div>
+                ` : `
+                  <div class="alert alert--warning" style="margin-bottom:var(--space-3);">
+                    ⚠️ Бұл бөлмеде бос орын жоқ
+                  </div>
+                  <a href="rooms.html" class="btn btn-secondary btn-block">
+                    ← Басқа бөлмелерді қарау
+                  </a>
+                `}
+              </div>
+            </div>
+          </div>
+
+          <!-- Басқа бөлмелер -->
+          ${related.length ? `
+            <div style="margin-top:var(--space-8);">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-5);">
+                <h2 style="font-size:1.5rem;">🏢 Осы ғимараттағы басқа бөлмелер</h2>
+                <a href="rooms.html?building=${room.buildingId}" class="btn btn-ghost btn-sm">Барлығын көру →</a>
+              </div>
+              <div class="grid grid-auto-md stagger">
+                ${related.map(r => {
+                  const rFree = r.capacity - r.occupied;
+                  return `
+                    <div class="room-card" data-room-id="${r.id}" style="cursor:pointer;">
+                      <div class="room-card__image">
+                        🚪
+                        <span class="room-card__badge">
+                          <span class="badge badge--${ROOM_STATUS_BADGE[r.status]}">
+                            ${ROOM_STATUS_LABELS[r.status]}
+                          </span>
+                        </span>
+                      </div>
+                      <div class="room-card__body">
+                        <h3 class="room-card__title">№${r.number} бөлме</h3>
+                        <div class="room-card__meta">
+                          <span class="room-card__meta-item">📐 ${r.floorNumber}-қабат</span>
+                          <span class="room-card__meta-item">👥 ${r.occupied}/${r.capacity}</span>
+                        </div>
+                        <div class="room-card__footer">
+                          <div class="room-card__price">${formatKzt(r.price)}<span>/ай</span></div>
+                          <span class="text-xs ${rFree > 0 ? 'text-success' : 'text-danger'}" style="font-weight:600;">
+                            ${rFree > 0 ? `✓ ${rFree} бос` : '✗ Толы'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : ''}
+        `;
+
+        // Related карточкаларды басу
+        container.querySelectorAll('[data-room-id]').forEach(card => {
+          card.addEventListener('click', () => {
+            window.location.href = `room.html?id=${card.dataset.roomId}`;
+          });
+        });
+
+        // "Өтінім беру" басқанда — сессия тексеру
+        const bookingBtn = container.querySelector('a[href*="booking.html"]');
+        if (bookingBtn) {
+          bookingBtn.addEventListener('click', (e) => {
+            if (!user) {
+              e.preventDefault();
+              toastError('Өтінім беру үшін кіру керек');
+              setTimeout(() => window.location.href = 'login.html', 800);
+            }
+          });
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

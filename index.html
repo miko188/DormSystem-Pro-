@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Қызметкер панелі — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/typography.css">
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/utilities.css">
+  <link rel="stylesheet" href="../assets/css/layout/container.css">
+  <link rel="stylesheet" href="../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../assets/css/layout/sidebar.css">
+  <link rel="stylesheet" href="../assets/css/layout/admin-layout.css">
+  <link rel="stylesheet" href="../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../assets/css/components/tables.css">
+  <link rel="stylesheet" href="../assets/css/components/alerts.css">
+  <link rel="stylesheet" href="../assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="../assets/css/components/toast.css">
+  <link rel="stylesheet" href="../assets/css/components/avatars.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="../index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro <small style="font-size:0.75rem;color:var(--color-text-muted);font-weight:500;">(Қызметкер)</small></span>
+      </a>
+      <div class="header__actions">
+        <a href="../notifications.html" class="notification-btn">🔔<span class="notification-btn__dot"></span></a>
+        <a href="profile.html" class="btn btn-secondary btn-sm">👤 <span id="userNameDisplay">Қызметкер</span></a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn">🚪 Шығу</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar__section">
+        <div class="sidebar__title">Менің жұмысым</div>
+        <a href="index.html" class="sidebar__link is-active">📊 Менің панелім</a>
+        <a href="students.html" class="sidebar__link">🎓 Студенттер</a>
+        <a href="rooms.html" class="sidebar__link">🚪 Бөлмелер</a>
+        <a href="applications.html" class="sidebar__link">📝 Өтінімдер</a>
+        <a href="bookings.html" class="sidebar__link">📅 Брондаулар</a>
+        <a href="requests.html" class="sidebar__link">📬 Өтініштер</a>
+        <a href="inspections.html" class="sidebar__link">🔍 Тексерулер</a>
+        <a href="schedule.html" class="sidebar__link">📆 Кесте</a>
+      </div>
+      <div class="sidebar__section">
+        <div class="sidebar__title">Профиль</div>
+        <a href="profile.html" class="sidebar__link">👤 Менің профилім</a>
+      </div>
+    </aside>
+
+    <main class="admin-content">
+      
+      <!-- Бет тақырыбы -->
+      <div class="admin-page-header">
+        <div>
+          <h1 class="admin-page-header__title">📊 Менің панелім</h1>
+          <p class="text-secondary text-sm" style="margin-top:4px;" id="welcomeText">Қош келдіңіз!</p>
+        </div>
+      </div>
+
+      <!-- Профиль карточкасы -->
+      <div class="card" style="padding:var(--space-6);margin-bottom:var(--space-6);">
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+          <div class="avatar avatar--xl" id="profileAvatar">?</div>
+          <div style="flex:1;min-width:200px;">
+            <h2 style="font-size:1.5rem;margin-bottom:4px;" id="profileName">Жүктелуде...</h2>
+            <p class="text-secondary" id="profilePosition">—</p>
+            <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;">
+              <div><span class="text-xs text-muted">📧</span> <span id="profileEmail">—</span></div>
+              <div><span class="text-xs text-muted">📱</span> <span id="profilePhone">—</span></div>
+              <div><span class="text-xs text-muted">🏢</span> <span id="profileBuilding">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Статистика -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-6);">
+        <div class="stat-card" style="padding:var(--space-4);">
+          <div class="stat-card__label">Менің өтініштерім</div>
+          <div class="stat-card__value" id="statMyRequests" style="font-size:1.75rem;">0</div>
+        </div>
+        <div class="stat-card" style="padding:var(--space-4);">
+          <div class="stat-card__label">Қараудағы</div>
+          <div class="stat-card__value" id="statPending" style="font-size:1.75rem;color:var(--color-warning);">0</div>
+        </div>
+        <div class="stat-card" style="padding:var(--space-4);">
+          <div class="stat-card__label">Шешілген</div>
+          <div class="stat-card__value" id="statResolved" style="font-size:1.75rem;color:var(--color-success);">0</div>
+        </div>
+        <div class="stat-card" style="padding:var(--space-4);">
+          <div class="stat-card__label">Бүгінгі тапсырмалар</div>
+          <div class="stat-card__value" id="statToday" style="font-size:1.75rem;color:var(--color-primary);">0</div>
+        </div>
+      </div>
+
+      <!-- Менің өтініштерім (кесте) -->
+      <div class="table-wrapper">
+        <div class="table-toolbar">
+          <div class="table-toolbar__title">📬 Маған тағайындалған өтініштер</div>
+          <a href="requests.html" class="btn btn-ghost btn-sm">Барлығын көру →</a>
+        </div>
+        <div class="table-scroll">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Студент</th>
+                <th>Мәселе</th>
+                <th>Күні</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody id="myRequestsBody">
+              <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--color-text-muted);">Жүктелуде...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Жылдам әрекеттер -->
+      <h2 style="margin: var(--space-6) 0 var(--space-4); font-size:1.125rem;">⚡ Жылдам әрекеттер</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4);">
+        <a href="requests.html" class="card card-hover" style="text-align:center;padding:var(--space-6) var(--space-4);">
+          <div style="font-size:2rem;margin-bottom:var(--space-2);">📬</div>
+          <h3 style="font-size:0.9375rem;">Өтініштер</h3>
+        </a>
+        <a href="inspections.html" class="card card-hover" style="text-align:center;padding:var(--space-6) var(--space-4);">
+          <div style="font-size:2rem;margin-bottom:var(--space-2);">🔍</div>
+          <h3 style="font-size:0.9375rem;">Тексерулер</h3>
+        </a>
+        <a href="schedule.html" class="card card-hover" style="text-align:center;padding:var(--space-6) var(--space-4);">
+          <div style="font-size:2rem;margin-bottom:var(--space-2);">📆</div>
+          <h3 style="font-size:0.9375rem;">Кесте</h3>
+        </a>
+        <a href="rooms.html" class="card card-hover" style="text-align:center;padding:var(--space-6) var(--space-4);">
+          <div style="font-size:2rem;margin-bottom:var(--space-2);">🚪</div>
+          <h3 style="font-size:0.9375rem;">Бөлмелер</h3>
+        </a>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div'); c.id = 'toast-container'; c.className = 'toast-container';
+        document.body.appendChild(c); return c;
+      })();
+      const icons = { success: '✅', danger: '❌', warning: '⚠️', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__icon">${icons[type]||'ℹ️'}</div><div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3500);
+    }
+
+    // 1. Сессия тексеру (Тек қызметкер)
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) {
+      try {
+        currentUser = JSON.parse(sessionData);
+        if (!currentUser || currentUser.role !== 'staff') {
+          window.location.href = '../login.html';
+        } else {
+          document.getElementById('userNameDisplay').textContent = currentUser.firstName;
+          document.getElementById('welcomeText').textContent = `Қош келдіңіз, ${currentUser.firstName}!`;
+        }
+      } catch (e) { window.location.href = '../login.html'; }
+    } else { window.location.href = '../login.html'; }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      if (confirm('Шығуды растайсыз ба?')) {
+        sessionStorage.removeItem('dormsystem_session_current_user');
+        window.location.href = '../login.html';
+      }
+    });
+
+    // 2. Профильді жүктеу
+    const staffList = JSON.parse(localStorage.getItem('dormsystem_staff') || '[]');
+    const myProfile = staffList.find(s => s.email === currentUser.email);
+
+    if (myProfile) {
+      const initials = (myProfile.firstName?.[0] || '') + (myProfile.lastName?.[0] || '');
+      document.getElementById('profileAvatar').textContent = initials.toUpperCase();
+      document.getElementById('profileName').textContent = `${myProfile.firstName} ${myProfile.lastName}`;
+      document.getElementById('profilePosition').textContent = myProfile.position || '—';
+      document.getElementById('profileEmail').textContent = myProfile.email || '—';
+      document.getElementById('profilePhone').textContent = myProfile.phone || '—';
+      document.getElementById('profileBuilding').textContent = myProfile.buildingName || '—';
+    }
+
+    // 3. Менің өтініштерім
+    const allRequests = JSON.parse(localStorage.getItem('dormsystem_requests') || '[]');
+    const myRequests = allRequests.filter(r => r.assignedTo === currentUser.email || r.assignedTo === currentUser.id);
+
+    document.getElementById('statMyRequests').textContent = myRequests.length;
+    document.getElementById('statPending').textContent = myRequests.filter(r => r.status === 'in_progress' || r.status === 'new').length;
+    document.getElementById('statResolved').textContent = myRequests.filter(r => r.status === 'resolved' || r.status === 'closed').length;
+    document.getElementById('statToday').textContent = myRequests.filter(r => {
+      if (!r.createdAt) return false;
+      return new Date(r.createdAt).toDateString() === new Date().toDateString();
+    }).length;
+
+    // 4. Кестені рендерлеу
+    const myRequestsBody = document.getElementById('myRequestsBody');
+    const REQUEST_STATUS = {
+      new: { label: 'Жаңа', class: 'info', icon: '🆕' },
+      in_progress: { label: 'Жұмыста', class: 'warning', icon: '⏳' },
+      waiting: { label: 'Күтуде', class: 'primary', icon: '⏸' },
+      resolved: { label: 'Шешілді', class: 'success', icon: '✅' },
+      closed: { label: 'Жабылды', class: 'neutral', icon: '🔒' },
+    };
+
+    if (myRequests.length === 0) {
+      myRequestsBody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--color-text-muted);">
+        <div style="font-size:2rem;margin-bottom:8px;">📭</div>Сізге тағайындалған өтініштер жоқ</td></tr>`;
+    } else {
+      const sorted = [...myRequests].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+      myRequestsBody.innerHTML = sorted.map(r => {
+        const st = REQUEST_STATUS[r.status] || REQUEST_STATUS.new;
+        const date = new Date(r.createdAt).toLocaleDateString('kk-KZ');
+        return `
+          <tr>
+            <td><strong>${r.studentName || 'Белгісіз'}</strong></td>
+            <td>${r.subject || r.description || '—'}</td>
+            <td>${date}</td>
+            <td><span class="badge badge--${st.class}">${st.icon} ${st.label}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    console.log('✅ Қызметкер панелі жүктелді');
+  </script>
+
+</body>
+</html>

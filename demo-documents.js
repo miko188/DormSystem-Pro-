@@ -1,0 +1,32 @@
+export const demoDocuments = [
+  {
+    id: 'doc_1',
+    studentId: 'stud_1',
+    name: 'Жеке куәлік көшірмесі.pdf',
+    type: 'identity',
+    size: 245000,
+    uploadedAt: '2024-08-25T10:00:00Z',
+    status: 'verified',
+    url: '#',
+  },
+  {
+    id: 'doc_2',
+    studentId: 'stud_1',
+    name: 'Студенттік билет.pdf',
+    type: 'student_id',
+    size: 180000,
+    uploadedAt: '2024-08-25T10:05:00Z',
+    status: 'verified',
+    url: '#',
+  },
+  {
+    id: 'doc_3',
+    studentId: 'stud_1',
+    name: 'Медициналық анықтама.pdf',
+    type: 'medical',
+    size: 320000,
+    uploadedAt: '2024-09-10T10:00:00Z',
+    status: 'pending',
+    url: '#',
+  },
+];

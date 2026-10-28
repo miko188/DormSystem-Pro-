@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кіру — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/forms.css">
+  <link rel="stylesheet" href="assets/css/components/inputs.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+</head>
+<body style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--gradient-hero);">
+
+  <div style="width:100%;max-width:440px;">
+    <div class="card animate-fade-in-up" style="padding:var(--space-8);">
+      <div style="text-align:center;margin-bottom:var(--space-6);">
+        <div style="width:64px;height:64px;border-radius:var(--radius-lg);background:var(--gradient-primary);display:inline-flex;align-items:center;justify-content:center;color:white;font-size:1.75rem;font-weight:800;margin-bottom:var(--space-4);">D</div>
+        <h1 style="font-size:1.5rem;margin-bottom:var(--space-2);">Жүйеге кіру</h1>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="email" class="input" placeholder="student@demo.kz" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Құпиясөз</label>
+          <input type="password" id="password" class="input" placeholder="••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn">Кіру →</button>
+      </form>
+
+      <!-- Демо аккаунттар -->
+      <div style="margin-top:var(--space-5);padding:var(--space-3);background:var(--color-surface-alt);border-radius:var(--radius-md);">
+        <p style="font-size:0.75rem;text-align:center;margin-bottom:8px;color:var(--color-text-muted);">Демо аккаунттар (бір басу)</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;">
+          <button type="button" class="demo-btn btn btn-secondary btn-sm" data-email="student@demo.kz">🎓 Студент</button>
+          <button type="button" class="demo-btn btn btn-secondary btn-sm" data-email="admin@demo.kz">👔 Әкімші</button>
+          <button type="button" class="demo-btn btn btn-secondary btn-sm" data-email="staff@demo.kz">👨‍💼 Қызметкер</button>
+        </div>
+        <p style="font-size:0.75rem;text-align:center;margin-top:8px;color:var(--color-text-muted);">Құпиясөз: <b>123456</b></p>
+      </div>
+
+      <div style="text-align:center;margin-top:var(--space-4);font-size:0.875rem;">
+        <a href="register.html" style="color:var(--color-primary);font-weight:600;">Тіркелу →</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Хабарлама көрсету функциясы (сыртқы файлсыз)
+    function showToast(message, type = 'danger') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div');
+        c.id = 'toast-container';
+        c.className = 'toast-container';
+        document.body.appendChild(c);
+        return c;
+      })();
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3500);
+    }
+
+    // Демо батырмаларды басу
+    document.querySelectorAll('.demo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('email').value = btn.dataset.email;
+        document.getElementById('password').value = '123456';
+      });
+    });
+
+    // Форманы жіберу
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        return showToast('Email және құпиясөзді енгізіңіз');
+      }
+
+      submitBtn.classList.add('is-loading');
+      submitBtn.disabled = true;
+
+      setTimeout(() => {
+        try {
+          // Деректерді localStorage-тен оқу
+          let users = JSON.parse(localStorage.getItem('dormsystem_users') || '[]');
+
+          // Егер деректер мүлдем бос болса, демо юзерлерді қосу
+          if (users.length === 0) {
+            users = [
+              { id: 'u1', email: 'student@demo.kz', password: '123456', firstName: 'Айдос', lastName: 'Серікұлы', role: 'student' },
+              { id: 'u2', email: 'admin@demo.kz', password: '123456', firstName: 'Дәурен', lastName: 'Бектұров', role: 'admin' },
+              { id: 'u3', email: 'staff@demo.kz', password: '123456', firstName: 'Мария', lastName: 'Петрова', role: 'staff' }
+            ];
+            localStorage.setItem('dormsystem_users', JSON.stringify(users));
+          }
+
+          // Пайдаланушыны іздеу
+          const user = users.find(u => u.email === email && u.password === password);
+
+          if (user) {
+            // Сессияны ашу (password-сыз)
+            const { password: _, ...safeUser } = user;
+            sessionStorage.setItem('dormsystem_session_current_user', JSON.stringify(safeUser));
+            
+            showToast(`Қош келдіңіз, ${user.firstName}! 🎉`, 'success');
+            
+            // Рөлге қарай бағыттау
+            setTimeout(() => {
+              if (user.role === 'admin') window.location.href = 'admin/index.html';
+              else if (user.role === 'staff') window.location.href = 'staff/index.html';
+              else window.location.href = 'index.html';
+            }, 800);
+          } else {
+            throw new Error('Email немесе құпиясөз қате');
+          }
+
+        } catch (err) {
+          showToast(err.message);
+          submitBtn.classList.remove('is-loading');
+          submitBtn.disabled = false;
+        }
+      }, 400);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+/* ============================================
+   MOBILE — Телефондар (< 640px)
+   ============================================ */
+
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.375rem; }
+  h3 { font-size: 1.125rem; }
+
+  .stat-card__value { font-size: 1.5rem; }
+
+  .page-title { font-size: 1.375rem; }
+
+  .header__inner { height: 60px; }
+
+  .card { padding: var(--space-4); }
+  .stat-card { padding: var(--space-4); }
+
+  .table th,
+  .table td {
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.875rem;
+  }
+
+  .modal__header,
+  .modal__body,
+  .modal__footer { padding: var(--space-4); }
+}

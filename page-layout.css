@@ -1,0 +1,38 @@
+/* ============================================
+   PAGE LAYOUT — Бет каркасы
+   ============================================ */
+
+.page {
+  padding: var(--space-8) 0;
+}
+
+.page-header {
+  margin-bottom: var(--space-6);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.page-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: var(--space-5) 0;
+  }
+  .page-title {
+    font-size: 1.5rem;
+  }
+}

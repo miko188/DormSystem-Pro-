@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Менің профилім — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/inputs.css">
+  <link rel="stylesheet" href="assets/css/components/forms.css">
+  <link rel="stylesheet" href="assets/css/components/selects.css">
+  <link rel="stylesheet" href="assets/css/components/alerts.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+  <link rel="stylesheet" href="assets/css/components/avatars.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <nav class="header__nav">
+        <a href="index.html" class="header__link">🏠 Басты бет</a>
+        <a href="rooms.html" class="header__link">🚪 Бөлмелер</a>
+        <a href="my-bookings.html" class="header__link">📝 Өтінімдер</a>
+        <a href="payments.html" class="header__link">💳 Төлемдер</a>
+        <a href="requests.html" class="header__link">📬 Өтініштер</a>
+      </nav>
+      <div class="header__actions">
+        <a href="notifications.html" class="notification-btn">🔔<span class="notification-btn__dot"></span></a>
+        <a href="login.html" class="btn btn-secondary btn-sm" id="loginBtn">🔑 Кіру</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="registerBtn">✨ Тіркелу</a>
+        <a href="profile.html" class="btn btn-secondary btn-sm" id="profileBtn" style="display:none;">👤 <span id="userNameDisplay">Профиль</span></a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">🚪 Шығу</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h1 class="page-title">👤 Менің профилім</h1>
+          <p class="page-subtitle">Жеке ақпаратыңыз бен оқу деректеріңіз</p>
+        </div>
+        <a href="edit-profile.html" class="btn btn-primary">✏️ Өңдеу</a>
+      </div>
+
+      <!-- Кірмеген болса -->
+      <div id="authWarning" class="alert alert--warning" style="display:none;margin-bottom:var(--space-5);">
+        <div>
+          <strong>⚠️ Назар аударыңыз!</strong> Профиліңізді көру үшін жүйеге кіруіңіз керек.
+          <a href="login.html" style="color:var(--color-primary);font-weight:600;text-decoration:underline;">Кіру →</a>
+        </div>
+      </div>
+
+      <div id="profileContent" style="display:none;">
+        
+        <!-- Беттік карточка -->
+        <div class="card" style="padding:var(--space-6);margin-bottom:var(--space-6);">
+          <div style="display:flex;align-items:center;gap:var(--space-6);flex-wrap:wrap;">
+            <div class="avatar avatar--xl" id="avatarLarge" style="font-size:2rem;">?</div>
+            <div style="flex:1;min-width:200px;">
+              <h2 style="font-size:1.75rem;margin-bottom:4px;" id="displayName">Жүктелуде...</h2>
+              <p class="text-secondary" id="displayRole">—</p>
+              <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+                <span class="badge badge--primary" id="displayFaculty">—</span>
+                <span class="badge badge--info" id="displayGroup">—</span>
+                <span class="badge badge--success" id="displayRoom">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 баған: Жеке деректер + Оқу деректері -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);margin-bottom:var(--space-6);" class="profile-grid">
+          
+          <!-- Жеке деректер -->
+          <div class="card" style="padding:var(--space-6);">
+            <h3 style="font-size:1.125rem;margin-bottom:var(--space-4);display:flex;align-items:center;gap:8px;">📋 Жеке деректер</h3>
+            <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Аты</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoFirstName">—</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Тегі</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoLastName">—</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Email</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoEmail">—</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Телефон</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoPhone">—</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">ЖСН</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoIIN">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Оқу деректері -->
+          <div class="card" style="padding:var(--space-6);">
+            <h3 style="font-size:1.125rem;margin-bottom:var(--space-4);display:flex;align-items:center;gap:8px;">🎓 Оқу деректері</h3>
+            <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Факультет</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoFaculty">—</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Топ</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoGroup">—</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Курс</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoCourse">—</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Студенттік билет</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoStudentId">—</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Тіркелген күні</div>
+                <div style="font-weight:600;margin-top:2px;" id="infoCreatedAt">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Тұрғын үй ақпараты -->
+        <div class="card" style="padding:var(--space-6);">
+          <h3 style="font-size:1.125rem;margin-bottom:var(--space-4);display:flex;align-items:center;gap:8px;">🏠 Тұрғын үй ақпараты</h3>
+          <div id="housingContent">
+            <!-- JS салады -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2024 DormSystem Pro — Студенттік жатақхананы басқару жүйесі</p>
+      <div class="footer__links">
+        <a href="info/privacy.html">Құпиялылық</a>
+        <a href="info/terms.html">Шарттар</a>
+        <a href="info/contacts.html">Байланыс</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div'); c.id = 'toast-container'; c.className = 'toast-container';
+        document.body.appendChild(c); return c;
+      })();
+      const icons = { success: '✅', danger: '❌', warning: '⚠️', info: 'ℹ️' };
+      const el = document.createElement('div');
+      el.className = `toast toast--${type}`;
+      el.innerHTML = `<div class="toast__icon">${icons[type]||'ℹ️'}</div><div class="toast__content"><div class="toast__message">${message}</div></div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3500);
+    }
+
+    // ============================================================
+    // 1. СЕССИЯ (sessionStorage — кіру)
+    // ============================================================
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) {
+      try { currentUser = JSON.parse(sessionData); } catch(e) {}
+    }
+
+    if (currentUser && currentUser.id) {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('registerBtn').style.display = 'none';
+      document.getElementById('profileBtn').style.display = 'inline-flex';
+      document.getElementById('logoutBtn').style.display = 'inline-flex';
+      document.getElementById('userNameDisplay').textContent = currentUser.firstName;
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Шығуды растайсыз ба?')) {
+          sessionStorage.removeItem('dormsystem_session_current_user');
+          window.location.reload();
+        }
+      });
+      document.getElementById('profileContent').style.display = 'block';
+    } else {
+      document.getElementById('authWarning').style.display = 'flex';
+    }
+
+    // ============================================================
+    // 2. ДЕРЕКТЕРДІ ЖҮКТЕУ (localStorage — синхронды!)
+    // ============================================================
+    const allStudents = JSON.parse(localStorage.getItem('dormsystem_students') || '[]');
+    const allRooms = JSON.parse(localStorage.getItem('dormsystem_rooms') || '[]');
+    const allUsers = JSON.parse(localStorage.getItem('dormsystem_users') || '[]');
+
+    // Студентті 3 жолмен табамыз (синхронды кепілдік)
+    let studentData = null;
+    if (currentUser) {
+      studentData = allStudents.find(s => 
+        s.userId === currentUser.id || 
+        s.email === currentUser.email ||
+        (s.firstName === currentUser.firstName && s.lastName === currentUser.lastName)
+      );
+    }
+
+    // Егер студент жазбасы табылмаса — users-тен аламыз
+    if (!studentData && currentUser) {
+      const user = allUsers.find(u => u.email === currentUser.email);
+      if (user) {
+        studentData = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phone: user.phone || '',
+          faculty: '',
+          group: '',
+          course: 1,
+          iin: '',
+          roomId: null,
+          createdAt: user.createdAt,
+        };
+      }
+    }
+
+    // ============================================================
+    // 3. ПРОФИЛЬДІ ТОЛТЫРУ
+    // ============================================================
+    function renderProfile() {
+      if (!studentData) {
+        document.getElementById('profileContent').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">❓</div>
+            <h3 class="empty-state__title">Профиль табылмады</h3>
+            <p class="empty-state__text">Деректеріңіз жүйеде жоқ. Әкімшіге хабарласыңыз.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const initials = (studentData.firstName?.[0] || '') + (studentData.lastName?.[0] || '');
+      
+      // Аватар
+      document.getElementById('avatarLarge').textContent = initials.toUpperCase();
+      
+      // Аты
+      document.getElementById('displayName').textContent = `${studentData.firstName || ''} ${studentData.lastName || ''}`.trim();
+      document.getElementById('displayRole').textContent = '🎓 Студент';
+      
+      // Badge-тер
+      document.getElementById('displayFaculty').textContent = studentData.faculty || 'Факультет жоқ';
+      document.getElementById('displayGroup').textContent = studentData.group || 'Топ жоқ';
+      
+      // Бөлме
+      const room = allRooms.find(r => r.id === studentData.roomId);
+      document.getElementById('displayRoom').textContent = room ? `№${room.number} бөлме` : 'Бөлме жоқ';
+      
+      // Жеке деректер
+      document.getElementById('infoFirstName').textContent = studentData.firstName || '—';
+      document.getElementById('infoLastName').textContent = studentData.lastName || '—';
+      document.getElementById('infoEmail').textContent = studentData.email || '—';
+      document.getElementById('infoPhone').textContent = studentData.phone || '—';
+      document.getElementById('infoIIN').textContent = studentData.iin || '—';
+      
+      // Оқу деректері
+      document.getElementById('infoFaculty').textContent = studentData.faculty || '—';
+      document.getElementById('infoGroup').textContent = studentData.group || '—';
+      document.getElementById('infoCourse').textContent = studentData.course ? `${studentData.course} курс` : '—';
+      document.getElementById('infoStudentId').textContent = studentData.studentId || '—';
+      
+      // Тіркелген күні
+      const createdDate = studentData.createdAt || currentUser?.createdAt;
+      document.getElementById('infoCreatedAt').textContent = createdDate 
+        ? new Date(createdDate).toLocaleDateString('kk-KZ', { year: 'numeric', month: 'long', day: 'numeric' })
+        : '—';
+      
+      // Тұрғын үй ақпараты
+      const housingContent = document.getElementById('housingContent');
+      
+      if (room) {
+        const free = (room.capacity || 0) - (room.occupied || 0);
+        const fillPercent = room.capacity ? Math.round((room.occupied / room.capacity) * 100) : 0;
+        
+        housingContent.innerHTML = `
+          <div style="padding:var(--space-5);background:var(--color-primary-light);border-radius:var(--radius-md);margin-bottom:var(--space-4);">
+            <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;">
+              <div>
+                <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Менің бөлмем</div>
+                <div style="font-size:1.5rem;font-weight:800;color:var(--color-primary);margin-top:4px;">№${room.number} бөлме</div>
+                <div class="text-sm text-secondary">${room.buildingName || ''} · ${room.floorNumber}-қабат</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="text-xs text-muted">Айлық төлем</div>
+                <div style="font-size:1.25rem;font-weight:700;color:var(--color-primary);">${(room.price||0).toLocaleString()} ₸</div>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--space-4);">
+            <div>
+              <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Сыйымдылық</div>
+              <div style="font-weight:600;margin-top:2px;">${room.capacity || 0} орын</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Толу</div>
+              <div style="font-weight:600;margin-top:2px;">${room.occupied || 0}/${room.capacity || 0} (${fillPercent}%)</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Бос орын</div>
+              <div style="font-weight:600;margin-top:2px;color:var(--color-success);">${free} орын</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:600;">Аудан</div>
+              <div style="font-weight:600;margin-top:2px;">${room.area || '—'} м²</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:var(--space-5);display:flex;gap:var(--space-2);flex-wrap:wrap;">
+            <a href="room.html?id=${room.id}" class="btn btn-secondary btn-sm">🚪 Бөлмені қарау</a>
+            <a href="payments.html" class="btn btn-primary btn-sm">💳 Төлемдер</a>
+            <a href="requests.html" class="btn btn-ghost btn-sm">📬 Өтініш беру</a>
+          </div>
+        `;
+      } else {
+        housingContent.innerHTML = `
+          <div class="empty-state" style="padding:var(--space-8) 0;">
+            <div class="empty-state__icon">🏠</div>
+            <h3 class="empty-state__title">Сіз әзірге бөлмеде тұрмайсыз</h3>
+            <p class="empty-state__text">Бос бөлмелерді қарап, өтінім беріңіз</p>
+            <a href="rooms.html" class="btn btn-primary" style="margin-top:var(--space-3);">🚪 Бөлмелерді қарау</a>
+          </div>
+        `;
+      }
+    }
+
+    renderProfile();
+
+    // ============================================================
+    // 4. Бетке қайта оралғанда жаңару (СИНХРОНДЫ!)
+    // ============================================================
+    window.addEventListener('focus', () => {
+      // localStorage-тағы деректер өзгерген болса, қайта жүктеу
+      const newStudents = localStorage.getItem('dormsystem_students');
+      if (newStudents) {
+        const newData = JSON.parse(newStudents);
+        const newStudent = currentUser ? newData.find(s => 
+          s.userId === currentUser.id || 
+          s.email === currentUser.email
+        ) : null;
+        
+        if (newStudent && JSON.stringify(newStudent) !== JSON.stringify(studentData)) {
+          window.location.reload();
+        }
+      }
+    });
+
+    console.log('✅ Профиль беті жүктелді');
+  </script>
+
+  <style>
+    @media (max-width: 768px) {
+      .profile-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+
+</body>
+</html>

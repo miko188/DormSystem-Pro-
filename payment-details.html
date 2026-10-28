@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Квитанция — DormSystem Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/container.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="assets/css/components/toast.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__brand">
+        <div class="header__logo">D</div>
+        <span>DormSystem Pro</span>
+      </a>
+      <div class="header__actions">
+        <a href="payments.html" class="btn btn-secondary btn-sm">← Артқа</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container container-sm" id="receiptContainer">
+      <div class="empty-state"><div class="empty-state__icon">⏳</div><p>Жүктелуде...</p></div>
+    </div>
+  </main>
+
+  <script>
+    const sessionData = sessionStorage.getItem('dormsystem_session_current_user');
+    let currentUser = null;
+    if (sessionData) { try { currentUser = JSON.parse(sessionData); } catch(e) {} }
+    
+    if (!currentUser) {
+      window.location.href = 'login.html';
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const paymentId = params.get('id');
+    const payments = JSON.parse(localStorage.getItem('dormsystem_payments') || '[]');
+    const payment = payments.find(p => p.id === paymentId);
+
+    const container = document.getElementById('receiptContainer');
+
+    if (!payment) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">❌</div>
+          <h3 class="empty-state__title">Төлем табылмады</h3>
+          <a href="payments.html" class="btn btn-primary">← Төлемдерге оралу</a>
+        </div>`;
+    } else {
+      // Қауіпсіздік: Тек өз төлемін көре алады
+      if (payment.studentId !== currentUser.id && payment.studentEmail !== currentUser.email && payment.studentName !== `${currentUser.firstName} ${currentUser.lastName}`) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">🚫</div>
+            <h3 class="empty-state__title">Рұқсат жоқ</h3>
+            <p>Бұл квитанция сізге тиесілі емес</p>
+            <a href="payments.html" class="btn btn-primary">← Төлемдерге оралу</a>
+          </div>`;
+      } else {
+        const dueDate = payment.dueDate ? new Date(payment.dueDate).toLocaleDateString('kk-KZ') : '—';
+        const paidDate = payment.paidDate ? new Date(payment.paidDate).toLocaleDateString('kk-KZ') : '—';
+
+        document.title = `Квитанция ${payment.receiptNumber || ''} — DormSystem Pro`;
+        
+        container.innerHTML = `
+          <div class="card" style="padding:var(--space-8);">
+            <!-- Header -->
+            <div style="text-align:center;padding-bottom:var(--space-6);border-bottom:2px dashed var(--color-border);margin-bottom:var(--space-6);">
+              <div style="width:64px;height:64px;border-radius:var(--radius-lg);background:var(--gradient-primary);display:inline-flex;align-items:center;justify-content:center;color:white;font-size:2rem;margin-bottom:var(--space-3);">D</div>
+              <h1 style="font-size:1.5rem;margin-bottom:4px;">DormSystem Pro</h1>
+              <p class="text-secondary text-sm">Студенттік жатақхананы басқару жүйесі</p>
+              <div style="margin-top:var(--space-3);">
+                <span class="badge badge--success" style="font-size:0.875rem;padding:6px 12px;">✅ Төленді</span>
+              </div>
+            </div>
+
+            <!-- Квитанция нөмірі -->
+            <div style="text-align:center;margin-bottom:var(--space-6);">
+              <div class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.05em;">Квитанция №</div>
+              <div style="font-size:1.5rem;font-weight:800;color:var(--color-primary);font-family:monospace;">${payment.receiptNumber || '—'}</div>
+            </div>
+
+            <!-- Ақпарат -->
+            <div style="display:grid;gap:var(--space-3);margin-bottom:var(--space-6);">
+              <div style="display:flex;justify-content:space-between;padding-bottom:var(--space-3);border-bottom:1px solid var(--color-border);">
+                <span class="text-secondary">Студент:</span>
+                <strong>${payment.studentName}</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding-bottom:var(--space-3);border-bottom:1px solid var(--color-border);">
+                <span class="text-secondary">Сипаттама:</span>
+                <strong>${payment.description || '—'}</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding-bottom:var(--space-3);border-bottom:1px solid var(--color-border);">
+                <span class="text-secondary">Мерзімі:</span>
+                <strong>${dueDate}</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding-bottom:var(--space-3);border-bottom:1px solid var(--color-border);">
+                <span class="text-secondary">Төленген күні:</span>
+                <strong>${paidDate}</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:var(--space-4);background:var(--color-primary-light);border-radius:var(--radius-md);margin-top:var(--space-3);">
+                <span style="font-weight:600;">Барлығы:</span>
+                <span style="font-size:1.5rem;font-weight:800;color:var(--color-primary);">${(payment.amount||0).toLocaleString()} ₸</span>
+              </div>
+            </div>
+
+            <!-- Қолтаңба -->
+            <div style="text-align:center;padding-top:var(--space-4);border-top:2px dashed var(--color-border);">
+              <div style="font-size:2rem;margin-bottom:var(--space-2);">✍️</div>
+              <div class="text-xs text-muted">Электрондық қолтаңба</div>
+              <div class="text-xs text-muted" style="margin-top:4px;">DormSystem Pro · ${new Date().toLocaleDateString('kk-KZ')}</div>
+            </div>
+
+            <!-- Батырмалар -->
+            <div style="display:flex;gap:var(--space-2);margin-top:var(--space-6);flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="window.print()" style="flex:1;">🖨 Басып шығару</button>
+              <a href="payments.html" class="btn btn-secondary" style="flex:1;">← Төлемдерге оралу</a>
+            </div>
+          </div>
+        `;
+      }
+    }
+  </script>
+
+</body>
+</html>
